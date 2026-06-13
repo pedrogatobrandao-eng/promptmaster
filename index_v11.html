@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<!-- v6 -->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PromptMaster — O Guia Definitivo de Prompts</title>
+<style>
+:root {
+  --bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a26;--card:#16161e;--card2:#1e1e2a;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#e8e8f0;--text2:#9090a8;--text3:#5a5a70;
+  --accent:#7c5cfc;--accent2:#9b7dff;--accent3:#c4b0ff;
+  --green:#22c55e;--amber:#f59e0b;--red:#ef4444;--cyan:#06b6d4;--pink:#ec4899;--gold:#fbbf24;
+  --r:12px;--r2:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;line-height:1.6;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px;}
+
+#authOverlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;}
+.auth-box{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:40px;width:100%;max-width:400px;text-align:center;}
+.auth-logo{width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--pink));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px;box-shadow:0 0 28px rgba(124,92,252,.4);}
+.auth-box h1{font-size:24px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:5px;}
+.auth-box>p{font-size:13px;color:var(--text2);margin-bottom:24px;}
+.auth-tabs{display:flex;background:var(--bg3);border-radius:var(--r2);padding:3px;margin-bottom:20px;}
+.auth-tab{flex:1;padding:8px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all .15s;text-align:center;}
+.auth-tab.active{background:var(--card2);color:var(--text);}
+.auth-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2);padding:11px 13px;color:var(--text);font-size:14px;outline:none;margin-bottom:10px;transition:border-color .2s;}
+.auth-input:focus{border-color:var(--accent);}
+.auth-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),var(--pink));color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;transition:opacity .2s;}
+.auth-btn:hover{opacity:.9;}
+.auth-err{color:#fca5a5;font-size:12px;margin:-5px 0 10px;display:none;}
+.auth-sep{font-size:11px;color:var(--text3);margin:14px 0;text-transform:uppercase;letter-spacing:.8px;}
+.auth-guest{width:100%;padding:11px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:var(--r2);font-size:13px;font-weight:600;cursor:pointer;}
+.auth-guest:hover{border-color:var(--accent);color:var(--text);}
+
+.app{display:flex;min-height:100vh;}
+.sidebar{width:270px;min-width:270px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto;z-index:100;transition:transform .3s;}
+.main{margin-left:270px;flex:1;min-height:100vh;}
+
+.logo{padding:20px 16px 13px;border-bottom:1px solid var(--border);}
+.logo-row{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--pink));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 0 16px rgba(124,92,252,.35);flex-shrink:0;}
+.logo h1{font-size:16px;font-weight:700;background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-sub{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;}
+.user-pill{display:flex;align-items:center;gap:7px;padding:9px 12px;margin:9px 9px 0;background:var(--bg3);border-radius:var(--r2);font-size:12px;}
+.u-av{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--pink));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.u-nm{color:var(--text);font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.logout-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:10px;padding:2px 5px;border-radius:4px;}
+.logout-btn:hover{color:var(--red);}
+
+.gp-wrap{padding:11px 13px;border-bottom:1px solid var(--border);}
+.gp-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;display:flex;justify-content:space-between;margin-bottom:4px;}
+.pb{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.pbf{height:100%;background:linear-gradient(90deg,var(--accent),var(--pink));border-radius:2px;transition:width .6s ease;}
+.xp-row{display:flex;justify-content:space-between;margin-top:4px;font-size:11px;}
+.xp-val{color:var(--gold);font-weight:700;}
+.xp-next{color:var(--text3);font-size:10px;}
+
+.nav-sec{padding:9px 13px 2px;font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:700;}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--r2);margin:1px 5px;cursor:pointer;transition:all .15s;font-size:12px;color:var(--text2);position:relative;}
+.ni:hover{background:var(--bg3);color:var(--text);}
+.ni.active{background:rgba(124,92,252,.13);color:var(--accent2);}
+.ni.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:13px;background:var(--accent);border-radius:0 2px 2px 0;}
+.ni-ic{font-size:14px;min-width:17px;}
+.nb{margin-left:auto;font-size:10px;padding:2px 6px;border-radius:20px;font-weight:700;}
+.nb.done{background:rgba(34,197,94,.17);color:var(--green);}
+.nb.locked{background:rgba(90,90,112,.22);color:var(--text3);}
+.nb.curr{background:rgba(245,158,11,.16);color:var(--amber);}
+.nb.new2{background:rgba(124,92,252,.22);color:var(--accent2);}
+.ni.mod-locked{opacity:.5;}
+
+.page{display:none;padding:28px 34px;max-width:900px;animation:fi .2s ease;}
+.page.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+.hero{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:42px;text-align:center;margin-bottom:26px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:360px;height:170px;background:radial-gradient(circle,rgba(124,92,252,.17),transparent 70%);}
+.hero-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(124,92,252,.13);border:1px solid rgba(124,92,252,.26);color:var(--accent2);padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:16px;}
+.hero h2{font-size:38px;font-weight:800;line-height:1.2;margin-bottom:13px;background:linear-gradient(135deg,#fff,#c4b0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero>p{font-size:15px;color:var(--text2);max-width:500px;margin:0 auto 22px;}
+.hero-stats{display:flex;gap:26px;justify-content:center;margin-top:22px;flex-wrap:wrap;}
+.hs{text-align:center;}
+.hs-n{font-size:24px;font-weight:800;color:var(--accent2);}
+.hs-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:var(--r2);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--pink));color:#fff;box-shadow:0 4px 13px rgba(124,92,252,.33);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(124,92,252,.42);}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border2);}
+.btn-secondary:hover{background:var(--card2);border-color:var(--accent);color:var(--accent2);}
+.btn-gold{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;box-shadow:0 4px 13px rgba(245,158,11,.33);}
+.btn-gold:hover{transform:translateY(-2px);}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none !important;box-shadow:none !important;}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:13px;}
+.card h3{font-size:15px;font-weight:700;margin-bottom:7px;}
+.card p{font-size:13px;color:var(--text2);line-height:1.75;}
+
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:13px;margin-top:16px;}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .2s;position:relative;}
+.mc:hover:not(.mc-locked){border-color:var(--accent);transform:translateY(-2px);box-shadow:0 7px 20px rgba(0,0,0,.28);}
+.mc-locked{cursor:not-allowed;opacity:.48;}
+.mc-completed{border-color:rgba(34,197,94,.28);}
+.mc-num{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;}
+.mc-emoji{font-size:24px;margin-bottom:7px;}
+.mc-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.mc-desc{font-size:11px;color:var(--text2);line-height:1.5;}
+.mc-status{position:absolute;top:11px;right:11px;font-size:10px;padding:2px 7px;border-radius:20px;}
+.mc-status.done{background:rgba(34,197,94,.14);color:var(--green);}
+.mc-status.lock{background:rgba(90,90,112,.18);color:var(--text3);}
+.mc-status.curr{background:rgba(245,158,11,.13);color:var(--amber);}
+.mc-xp{font-size:10px;color:var(--text3);margin-top:5px;}
+
+.lhdr{margin-bottom:22px;}
+.lbc{font-size:11px;color:var(--text3);margin-bottom:6px;}
+.lbc span{color:var(--accent2);}
+.ltitle{font-size:24px;font-weight:800;margin-bottom:6px;}
+.lmeta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text2);}
+
+.tabs{display:flex;gap:2px;background:var(--bg);border-radius:var(--r2);padding:3px;margin-bottom:18px;border:1px solid var(--border);flex-wrap:wrap;}
+.tab{flex:1;min-width:70px;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;transition:all .15s;text-align:center;color:var(--text2);}
+.tab.active{background:var(--card2);color:var(--text);}
+.tc{display:none;}
+.tc.active{display:block;}
+
+.cb{margin-bottom:20px;}
+.cb h3{font-size:18px;font-weight:700;margin-bottom:9px;}
+.cb h4{font-size:14px;font-weight:600;margin-bottom:6px;color:var(--accent2);}
+.cb p{font-size:13px;line-height:1.85;color:var(--text2);margin-bottom:9px;}
+.cb ul{list-style:none;padding:0;}
+.cb ul li{padding:4px 0 4px 20px;position:relative;font-size:13px;color:var(--text2);line-height:1.65;}
+.cb ul li::before{content:'→';position:absolute;left:0;color:var(--accent);}
+
+.callout{border-radius:var(--r2);padding:12px 14px;margin:12px 0;display:flex;gap:9px;font-size:13px;line-height:1.65;}
+.cl-ic{font-size:16px;flex-shrink:0;margin-top:1px;}
+.callout.info{background:rgba(6,182,212,.09);border:1px solid rgba(6,182,212,.2);color:#67e8f9;}
+.callout.tip{background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.2);color:#86efac;}
+.callout.warn{background:rgba(245,158,11,.09);border:1px solid rgba(245,158,11,.2);color:#fcd34d;}
+.callout.imp{background:rgba(124,92,252,.09);border:1px solid rgba(124,92,252,.25);color:var(--accent3);}
+
+.cblk{background:var(--bg);border:1px solid var(--border);border-radius:var(--r2);padding:16px;font-family:'Fira Code','Courier New',monospace;font-size:12px;line-height:1.8;margin:12px 0;overflow-x:auto;}
+.cbhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;font-family:system-ui;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;}
+.clbl{background:rgba(124,92,252,.18);color:var(--accent2);padding:2px 7px;border-radius:4px;}
+.pg{color:#86efac;}.pb2{color:#fca5a5;}.pn{color:#93c5fd;}.pv{color:#fde68a;}.pp{color:#c4b0ff;}
+
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0;}
+.cmpbox{background:var(--bg);border-radius:var(--r2);padding:12px;font-size:12px;line-height:1.65;font-family:'Fira Code',monospace;}
+.cmpbox.bad{border-left:3px solid var(--red);}
+.cmpbox.good{border-left:3px solid var(--green);}
+.cmplbl{font-family:system-ui;font-size:10px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;font-weight:700;}
+.cmpbox.bad .cmplbl{color:#fca5a5;}.cmpbox.good .cmplbl{color:#86efac;}
+
+.formula{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2);padding:13px 16px;margin:12px 0;font-family:'Fira Code',monospace;font-size:12px;line-height:1.9;}
+.ftitle{font-family:system-ui;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);margin-bottom:6px;}
+
+.ait{width:100%;border-collapse:separate;border-spacing:0;margin:12px 0;border-radius:var(--r2);overflow:hidden;border:1px solid var(--border);}
+.ait th{background:var(--bg3);padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;}
+.ait td{padding:8px 12px;font-size:12px;color:var(--text2);border-top:1px solid var(--border);vertical-align:top;}
+.ait tr:hover td{background:rgba(255,255,255,.02);}
+.ai-nm{font-weight:600;color:var(--text);}
+
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.tag.video{background:rgba(239,68,68,.13);color:#fca5a5;}
+.tag.image{background:rgba(124,92,252,.13);color:var(--accent2);}
+.tag.text{background:rgba(6,182,212,.13);color:#67e8f9;}
+.tag.code{background:rgba(245,158,11,.13);color:#fcd34d;}
+
+.exarea{background:var(--bg2);border:2px solid var(--accent);border-radius:16px;padding:24px;margin:22px 0;box-shadow:0 0 26px rgba(124,92,252,.09);}
+.exbadge{display:inline-flex;align-items:center;gap:5px;background:rgba(124,92,252,.16);color:var(--accent2);padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:11px;}
+.exarea h3{font-size:16px;font-weight:700;margin-bottom:5px;}
+.exdesc{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.65;}
+.pta{width:100%;min-height:115px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--r2);padding:12px 14px;color:var(--text);font-size:13px;line-height:1.75;font-family:'Fira Code',monospace;resize:vertical;transition:border-color .2s;outline:none;}
+.pta:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,252,.11);}
+.exactions{display:flex;gap:8px;margin-top:11px;align-items:center;flex-wrap:wrap;}
+.ccount{font-size:11px;color:var(--text3);margin-left:auto;}
+
+.aifb{margin-top:16px;display:none;}
+.aifb.vis{display:block;}
+.aifbhdr{display:flex;align-items:center;gap:8px;margin-bottom:11px;}
+.aiav{width:28px;height:28px;background:linear-gradient(135deg,var(--accent),var(--pink));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.aifbhdr span{font-size:12px;font-weight:600;color:var(--accent2);}
+.aifbhdr small{font-size:10px;color:var(--text3);}
+.fb-score{display:flex;gap:6px;margin-bottom:11px;flex-wrap:wrap;}
+.spill{display:flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;}
+.spill.great{background:rgba(34,197,94,.13);color:var(--green);border:1px solid rgba(34,197,94,.25);}
+.spill.good{background:rgba(245,158,11,.13);color:var(--amber);border:1px solid rgba(245,158,11,.25);}
+.spill.nw{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.22);}
+.fbcontent{background:var(--bg);border:1px solid var(--border);border-radius:var(--r2);padding:14px;font-size:13px;line-height:1.85;color:var(--text2);}
+.fbsec{margin-bottom:11px;}
+.fbsec:last-child{margin-bottom:0;}
+.fbsec-t{font-size:10px;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:4px;}
+.fbsec-t.gl{color:var(--green);}.fbsec-t.al{color:var(--amber);}.fbsec-t.tl{color:var(--cyan);}
+.thinking{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--accent2);padding:12px;background:var(--bg);border-radius:var(--r2);border:1px solid var(--border);}
+.tdots{display:flex;gap:3px;}
+.tdots span{width:5px;height:5px;background:var(--accent);border-radius:50%;animation:bounce 1.4s infinite;}
+.tdots span:nth-child(2){animation-delay:.2s;}
+.tdots span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,80%,100%{transform:scale(.7);opacity:.4}40%{transform:scale(1);opacity:1}}
+.sdisp{display:flex;align-items:center;gap:13px;background:var(--bg);border-radius:var(--r2);padding:12px 15px;margin-top:11px;border:1px solid var(--border);}
+.snum{font-size:32px;font-weight:800;min-width:50px;}
+.snum.hi{color:var(--green);}.snum.mi{color:var(--amber);}.snum.lo{color:var(--red);}
+.sbars{flex:1;}
+.sbar-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.sbar-l{font-size:10px;color:var(--text3);min-width:72px;}
+.sbar-t{flex:1;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.sbar-f{height:100%;border-radius:2px;transition:width .8s ease;}
+.sbar-f.a{background:var(--cyan);}.sbar-f.b{background:var(--accent);}.sbar-f.c{background:var(--green);}.sbar-f.d{background:var(--amber);}
+.xpgain{display:inline-flex;align-items:center;gap:3px;background:rgba(251,191,36,.13);border:1px solid rgba(251,191,36,.25);color:var(--gold);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;animation:pop .3s ease;}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.ach{display:flex;align-items:center;gap:11px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.16);border-radius:var(--r);padding:13px 16px;margin:13px 0;}
+.ach-ic{font-size:26px;}
+.ach h4{font-size:12px;font-weight:700;color:var(--gold);}
+.ach p{font-size:11px;color:var(--text3);}
+
+.lnav{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid var(--border);margin-top:26px;}
+
+.done-banner{background:linear-gradient(135deg,rgba(34,197,94,.11),rgba(124,92,252,.11));border:1px solid rgba(34,197,94,.22);border-radius:var(--r);padding:14px 18px;margin-top:18px;display:none;align-items:center;gap:13px;}
+.done-banner.vis{display:flex;}
+
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:9px;margin-bottom:18px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:13px;text-align:center;}
+.sc-n{font-size:24px;font-weight:800;margin-bottom:3px;}
+.sc-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;}
+
+.tl{position:relative;padding-left:20px;}
+.tl::before{content:'';position:absolute;left:5px;top:0;bottom:0;width:1px;background:var(--border);}
+.tli{position:relative;padding-bottom:18px;padding-left:13px;}
+.tli::before{content:'';position:absolute;left:-20px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);}
+.tli:last-child{padding-bottom:0;}
+.tl-d{font-size:10px;color:var(--text3);margin-bottom:2px;text-transform:uppercase;letter-spacing:.4px;}
+.tl-t{font-size:12px;font-weight:600;margin-bottom:2px;}
+.tl-ds{font-size:11px;color:var(--text2);}
+
+.mob-toggle{display:none;position:fixed;top:13px;left:13px;z-index:200;background:var(--accent);border:none;border-radius:8px;padding:8px;cursor:pointer;font-size:16px;color:#fff;}
+.sob{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90;}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .mob-toggle{display:flex;}
+  .sob.vis{display:block;}
+  .page{padding:18px 13px;}
+  .hero{padding:24px 16px;}
+  .hero h2{font-size:24px;}
+  .cmp{grid-template-columns:1fr;}
+  .mgrid{grid-template-columns:1fr;}
+  .tabs{gap:1px;}
+  .tab{font-size:11px;padding:6px 7px;}
+}
+#toast{position:fixed;bottom:16px;right:16px;z-index:9998;background:var(--card2);color:var(--text);padding:10px 14px;border-radius:var(--r);font-size:12px;max-width:310px;line-height:1.5;box-shadow:0 4px 16px rgba(0,0,0,.3);animation:fi .3s ease;}
+</style>
+</head>
+<body>
+<!-- AUTH -->
+<div id="authOverlay">
+  <div class="auth-box">
+    <div class="auth-logo">🧠</div>
+    <h1>PromptMaster</h1>
+    <p>Entre ou crie sua conta para salvar seu progresso</p>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="authTab('login')">Entrar</div>
+      <div class="auth-tab" onclick="authTab('register')">Criar Conta</div>
+    </div>
+    <div class="auth-err" id="authErr"></div>
+    <input class="auth-input" id="authU" placeholder="Nome de usuário" maxlength="32"/>
+    <input class="auth-input" id="authP" placeholder="Senha" type="password" maxlength="64" onkeydown="if(event.key==='Enter')doAuth()"/>
+    <input class="auth-input" id="authP2" placeholder="Confirmar senha" type="password" maxlength="64" style="display:none" onkeydown="if(event.key==='Enter')doAuth()"/>
+    <input class="auth-input" id="authCode" placeholder="Código de acesso (recebido na compra)" maxlength="32" style="display:none" onkeydown="if(event.key==='Enter')doAuth()"/>
+    <button class="auth-btn" id="authBtn" onclick="doAuth()">Entrar</button>
+    <div class="auth-sep" style="font-size:11px;color:var(--text3)">Adquira seu acesso em kiwify.com.br</div>
+  </div>
+</div>
+
+<button class="mob-toggle" onclick="toggleSidebar()">☰</button>
+<div class="sob" id="sob" onclick="toggleSidebar()"></div>
+
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-row">
+      <div class="logo-icon">🧠</div>
+      <div><h1>PromptMaster</h1><div class="logo-sub">Guia Definitivo</div></div>
+    </div>
+  </div>
+  <div class="user-pill">
+    <div class="u-av" id="uav">?</div>
+    <div class="u-nm" id="unm">–</div>
+    <button class="logout-btn" onclick="doLogout()">Sair</button>
+  </div>
+  <div class="gp-wrap">
+    <div class="gp-label"><span>Progresso</span><span id="ppct">0%</span></div>
+    <div class="pb"><div class="pbf" id="pbf" style="width:0%"></div></div>
+    <div class="xp-row">
+      <span class="xp-val">⚡ <span id="xpv">0</span> XP</span>
+      <span class="xp-next" id="xpnxt"></span>
+    </div>
+  </div>
+  <div class="nav-sec">Início</div>
+  <div class="ni" onclick="nav('home')"><span class="ni-ic">🏠</span>Página Inicial</div>
+  <div class="ni" onclick="nav('about')"><span class="ni-ic">🗺️</span>Sobre o Curso</div>
+  <div class="nav-sec">Módulos</div>
+  <div class="ni" id="ni-mod1" onclick="nav('mod1')"><span class="ni-ic">🌱</span>1. Fundamentos<span class="nb curr" id="nb1">Atual</span></div>
+  <div class="ni mod-locked" id="ni-mod2" onclick="tryNav('mod2')"><span class="ni-ic">✍️</span>2. Engenharia<span class="nb locked" id="nb2">🔒 50xp</span></div>
+  <div class="ni mod-locked" id="ni-mod3" onclick="tryNav('mod3')"><span class="ni-ic">🖼️</span>3. Imagens<span class="nb locked" id="nb3">🔒 110xp</span></div>
+  <div class="ni mod-locked" id="ni-mod4" onclick="tryNav('mod4')"><span class="ni-ic">🎬</span>4. Vídeo<span class="nb locked" id="nb4">🔒 180xp</span></div>
+  <div class="ni mod-locked" id="ni-mod5" onclick="tryNav('mod5')"><span class="ni-ic">💻</span>5. Código<span class="nb locked" id="nb5">🔒 260xp</span></div>
+  <div class="ni mod-locked" id="ni-mod6" onclick="tryNav('mod6')"><span class="ni-ic">🤖</span>6. As IAs<span class="nb locked" id="nb6">🔒 350xp</span></div>
+  <div class="ni mod-locked" id="ni-mod7" onclick="tryNav('mod7')"><span class="ni-ic">🔥</span>7. Técnicas Pro<span class="nb locked" id="nb7">🔒 450xp</span></div>
+  <div class="ni mod-locked" id="ni-mod8" onclick="tryNav('mod8')"><span class="ni-ic">🚀</span>8. Casos Reais<span class="nb locked" id="nb8">🔒 560xp</span></div>
+  <div class="nav-sec">Ferramentas</div>
+  <div class="ni" onclick="nav('sandbox')"><span class="ni-ic">🧪</span>Sandbox Livre<span class="nb new2">Livre</span></div>
+  <div class="ni" onclick="nav('progress')"><span class="ni-ic">📊</span>Meu Progresso</div>
+</aside>
+
+<main class="main">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-badge">✦ Edição 2025 — IA Avaliadora Integrada</div>
+    <h2>Domine os Prompts.<br>Domine a IA.</h2>
+    <p>Do zero ao profissional. Exercícios reais corrigidos por IA. Desbloqueie módulos conforme avança.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="nav('mod1')">🚀 Começar Agora</button>
+      <button class="btn btn-secondary" onclick="nav('about')">Ver Conteúdo</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-n">8</div><div class="hs-l">Módulos</div></div>
+      <div class="hs"><div class="hs-n">15+</div><div class="hs-l">Exercícios</div></div>
+      <div class="hs"><div class="hs-n">IA</div><div class="hs-l">Avaliadora</div></div>
+      <div class="hs"><div class="hs-n">XP</div><div class="hs-l">Sistema</div></div>
+    </div>
+  </div>
+  <h3 style="font-size:17px;font-weight:700;margin-bottom:13px">Trilha de Aprendizado</h3>
+  <div class="mgrid" id="home-grid"></div>
+</div>
+
+<!-- ABOUT -->
+<div class="page" id="page-about">
+  <div class="lhdr"><div class="lbc">PromptMaster</div><div class="ltitle">Sobre o Curso</div></div>
+  <div class="card"><p>Cada módulo tem 3 partes de teoria aprofundada + exercícios avaliados por IA. Você só avança ao ganhar XP suficiente — sem atalhos. O progresso fica salvo na sua conta.</p></div>
+  <div class="tl">
+    <div class="tli"><div class="tl-d">Módulo 1 — Livre</div><div class="tl-t">🌱 Fundamentos</div><div class="tl-ds">O que é IA, tokens, janela de contexto, os 5 elementos do prompt perfeito.</div></div>
+    <div class="tli"><div class="tl-d">Módulo 2 — 50 XP</div><div class="tl-t">✍️ Engenharia de Prompts</div><div class="tl-ds">Zero-shot, few-shot, Chain of Thought, controle de tom, iteração.</div></div>
+    <div class="tli"><div class="tl-d">Módulo 3 — 110 XP</div><div class="tl-t">🖼️ Geração de Imagens</div><div class="tl-ds">Midjourney, DALL-E, estilos artísticos, iluminação, negative prompts.</div></div>
+    <div class="tli"><div class="tl-d">Módulo 4 — 180 XP</div><div class="tl-t">🎬 Vídeo & Mídia</div><div class="tl-ds">Sora, Runway, planos de câmera, ElevenLabs, Suno AI.</div></div>
+    <div class="tli"><div class="tl-d">Módulo 5 — 260 XP</div><div class="tl-t">💻 Código & Dev</div><div class="tl-ds">GitHub Copilot, Claude Code, templates para debug, refactor.</div></div>
+    <div class="tli"><div class="tl-d">Módulo 6 — 350 XP</div><div class="tl-t">🤖 O Universo das IAs</div><div class="tl-ds">ChatGPT, Claude, Gemini, Grok — quando usar cada um.</div></div>
+    <div class="tli"><div class="tl-d">Módulo 7 — 450 XP</div><div class="tl-t">🔥 Técnicas Pro</div><div class="tl-ds">Tree of Thought, RAG, System Prompts, Agentes IA.</div></div>
+    <div class="tli"><div class="tl-d">Módulo 8 — 560 XP</div><div class="tl-t">🚀 Casos de Uso Reais</div><div class="tl-ds">Marketing, negócios, conteúdo, estudo — aplicações completas.</div></div>
+  </div>
+  <div style="margin-top:18px"><button class="btn btn-primary" onclick="nav('mod1')">🚀 Começar</button></div>
+</div>
+
+<!-- MOD 1 -->
+<div class="page" id="page-mod1">
+  <div class="lhdr">
+    <div class="lbc">📍 <span>Módulo 1</span> — Fundamentos</div>
+    <div class="ltitle">🌱 O Que São Prompts e Como as IAs Pensam</div>
+    <div class="lmeta"><span>⏱️ ~40 min</span><span class="tag text">3 Partes + Exercícios</span></div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="st('mod1','a')">📖 Parte 1</div>
+    <div class="tab" onclick="st('mod1','b')">📖 Parte 2</div>
+    <div class="tab" onclick="st('mod1','c')">📖 Parte 3</div>
+    <div class="tab" onclick="st('mod1','ex')">🏋️ Exercícios</div>
+    <div class="tab" onclick="st('mod1','cs')">📋 Ref.</div>
+  </div>
+  <div id="mod1-a" class="tc active">
+    <div class="cb">
+      <h3>O que é uma IA Generativa?</h3>
+      <p>Vivemos um momento histórico. Pela primeira vez, máquinas conseguem criar — escrever textos, gerar imagens, compor músicas, escrever código. Para usar essas ferramentas com maestria, você precisa entender como elas funcionam por dentro.</p>
+      <p>Uma <strong>IA Generativa</strong> é um sistema treinado em quantidades imensas de dados — bilhões de páginas de texto, milhões de imagens, anos de código. Durante o treinamento, ela aprende padrões: como palavras se relacionam, como ideias se conectam, como problemas se resolvem.</p>
+      <p>O resultado é uma máquina que consegue <em>completar padrões</em> de forma extremamente sofisticada. Quando você escreve uma pergunta, ela busca nos padrões aprendidos a resposta mais provável e coerente.</p>
+      <div class="callout info"><span class="cl-ic">💡</span><div><strong>Metáfora fundamental:</strong> Imagine um estagiário genial que leu todos os livros, artigos e documentos do mundo. Ele sabe muito — mas só vai fazer exatamente o que você precisa se você souber pedir com clareza.</div></div>
+      <h4>Os Tipos de IA Generativa</h4>
+      <ul>
+        <li><strong>LLMs (Large Language Models)</strong> — processam e geram texto: GPT-4, Claude, Gemini, Llama</li>
+        <li><strong>Modelos de Difusão</strong> — geram imagens: Stable Diffusion, DALL-E, Midjourney</li>
+        <li><strong>Modelos de Vídeo</strong> — geram vídeos: Sora, Runway, Pika, Kling</li>
+        <li><strong>Modelos de Áudio</strong> — geram voz e música: ElevenLabs, Suno, Udio</li>
+        <li><strong>Multimodais</strong> — trabalham com múltiplos tipos: GPT-4o, Gemini Ultra</li>
+      </ul>
+      <h4>O que são Tokens?</h4>
+      <p>As IAs de texto não leem palavras — elas leem <strong>tokens</strong>. Um token é aproximadamente ¾ de uma palavra em inglês, ou um pouco menos em português. A palavra "extraordinário" pode virar 3-4 tokens.</p>
+      <p>Por que isso importa? Porque toda IA tem um limite de tokens que consegue processar de uma vez — chamado de <strong>janela de contexto</strong>. Modelos modernos como Claude têm até 200.000 tokens (um livro inteiro). Modelos menores têm 4.000-8.000.</p>
+      <div class="callout warn"><span class="cl-ic">⚠️</span><div><strong>Limite prático:</strong> Quando uma conversa ultrapassa a janela de contexto, a IA esquece o início. Se perceber respostas inconsistentes em conversas longas, comece uma nova conversa com um resumo do contexto.</div></div>
+    </div>
+  </div>
+  <div id="mod1-b" class="tc">
+    <div class="cb">
+      <h3>Como a IA Interpreta Seu Prompt</h3>
+      <p>Quando você envia uma mensagem, a IA realiza um processo complexo de interpretação em milissegundos. Entender esse processo é a chave para criar prompts mais eficazes.</p>
+      <h4>1. Análise Semântica</h4>
+      <p>A IA analisa o <em>significado</em> das palavras, não apenas as palavras em si. "Carro" e "automóvel" são interpretados de forma equivalente. Mas "me explica sobre carros" e "me lista os 10 carros mais vendidos de 2024" ativam respostas completamente diferentes.</p>
+      <h4>2. Inferência de Intenção</h4>
+      <p>A IA tenta inferir o que você realmente quer. Se você escreve "me dá uma receita", ela infere que você quer cozinhar — não uma lista de ingredientes sem instruções. Porém, se sua intenção não for óbvia, ela pode inferir errado.</p>
+      <div class="callout warn"><span class="cl-ic">⚠️</span><div><strong>Armadilha comum:</strong> "Me ajuda com meu negócio" pode levar a uma resposta genérica. A IA não sabe se você quer estratégia, marketing, finanças ou suporte técnico. Seja específico.</div></div>
+      <h4>3. Calibragem de Formato</h4>
+      <p>A IA tenta adivinhar o formato ideal da resposta. Se você perguntar algo curto, ela tende a responder de forma concisa. Se escrever um prompt longo e detalhado, ela tende a dar uma resposta mais elaborada. Mas você pode — e deve — especificar o formato explicitamente.</p>
+      <h4>4. O Papel do Contexto da Conversa</h4>
+      <p>Em uma conversa, cada mensagem fica na janela de contexto. Isso significa que a IA se lembra do que foi dito antes. Você pode referenciar coisas anteriores: "usando o email que você escreveu antes, agora adapte para um SMS".</p>
+      <div class="callout tip"><span class="cl-ic">💡</span><div><strong>Insight poderoso:</strong> A IA sempre tenta dar a resposta mais útil com base no que você escreveu. Quanto mais específico você for, menos ela precisa adivinhar — e melhor será o resultado.</div></div>
+    </div>
+  </div>
+  <div id="mod1-c" class="tc">
+    <div class="cb">
+      <h3>Os 5 Elementos de um Prompt Perfeito</h3>
+      <p>Após estudar milhares de prompts profissionais, identificamos 5 elementos fundamentais. Você não precisa usar todos sempre — mas conhecer cada um transforma a qualidade dos seus resultados.</p>
+      <div class="formula"><div class="ftitle">🧬 A Fórmula Fundamental</div><span class="pp">[PAPEL]</span> + <span class="pg"> [TAREFA]</span> + <span class="pv"> [CONTEXTO]</span> + <span class="pn"> [FORMATO]</span> + <span class="pb2"> [RESTRIÇÕES]</span></div>
+      <h4>1. Papel (Persona) — Quem a IA deve ser</h4>
+      <p>Dizer à IA quem ela deve ser ativa conhecimentos, vocabulário e abordagem específicos. É a diferença entre uma resposta genérica e uma especializada.</p>
+      <div class="cblk"><span class="pg">✓ "Você é um nutricionista esportivo com 15 anos de experiência..."</span><br><span class="pg">✓ "Aja como advogado especialista em direito trabalhista brasileiro..."</span><br><span class="pb2">✗ "Me ajuda com nutrição" — sem papel, resposta genérica</span></div>
+      <h4>2. Tarefa — O que fazer, com verbos de ação</h4>
+      <p>Use verbos claros e específicos. Cada verbo sinaliza um tipo diferente de resposta esperada.</p>
+      <div class="cblk"><span class="pg">Analise · Crie · Liste · Compare · Explique · Resuma · Reescreva</span><br><span class="pg">Critique · Proponha · Classifique · Simplifique · Adapte · Estruture</span></div>
+      <h4>3. Contexto — Quanto mais, melhor</h4>
+      <p>Inclua: quem é você, para quem é o resultado, qual é o objetivo, qual é a situação atual.</p>
+      <div class="cmp">
+        <div class="cmpbox bad"><div class="cmplbl">❌ Sem contexto</div><span style="color:#aaa">Crie um post de Instagram</span></div>
+        <div class="cmpbox good"><div class="cmplbl">✅ Com contexto rico</div><span class="pg">Crie um post de Instagram para uma academia em São Paulo voltada para adultos 30-50 anos. Objetivo: divulgar aula experimental de pilates. Tom: motivacional mas acessível. Sem jargões fitness excessivos.</span></div>
+      </div>
+      <h4>4. Formato — Como você quer receber</h4>
+      <div class="cblk"><span class="pv">"Responda em tópicos com bullet points"</span><br><span class="pv">"Use tabela com colunas X, Y, Z"</span><br><span class="pv">"Máximo 200 palavras"</span><br><span class="pv">"Em 3 parágrafos: problema, solução, próximos passos"</span></div>
+      <h4>5. Restrições — O que você NÃO quer</h4>
+      <div class="cblk"><span class="pb2">"Não use jargões técnicos"</span><br><span class="pb2">"Sem introdução — vá direto ao ponto"</span><br><span class="pb2">"Evite clichês como 'no mundo atual'"</span><br><span class="pb2">"Não inclua disclaimers ou avisos legais"</span></div>
+      <h4>Os 5 Elementos em Ação — Exemplo Completo</h4>
+      <div class="cmp">
+        <div class="cmpbox bad"><div class="cmplbl">❌ Prompt Básico</div><span style="color:#aaa">escreve um email de vendas</span></div>
+        <div class="cmpbox good"><div class="cmplbl">✅ Prompt com os 5 Elementos</div><span class="pg">Você é especialista em copywriting B2B. [PAPEL]
+Escreva email de vendas para software de gestão financeira. [TAREFA]
+Cliente: CFO de empresa 50-200 funcionários que usa Excel. Sente dor com relatórios manuais. [CONTEXTO]
+Formato: assunto + 3 parágrafos + CTA. Máximo 250 palavras. [FORMATO]
+Sem linguagem técnica de TI, sem frases de abertura clichê. [RESTRIÇÕES]</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="mod1-ex" class="tc">
+    <div class="exarea">
+      <div class="exbadge">🏋️ Exercício 1.1 — Reescrita</div>
+      <h3>Transforme um Prompt Fraco em Profissional</h3>
+      <p class="exdesc">Reescreva o prompt abaixo aplicando os 5 elementos: papel, tarefa, contexto, formato e restrições. Quanto mais completo e específico, maior a nota da IA avaliadora.</p>
+      <div class="callout warn"><span class="cl-ic">📝</span><div><strong>Prompt original (fraco):</strong> "me faz um texto sobre saúde"<br>Reescreva usando todos os 5 elementos aprendidos.</div></div>
+      <textarea class="pta" id="e1a" placeholder="Escreva seu prompt melhorado aqui..." oninput="cc('e1')"></textarea>
+      <div class="exactions">
+        <button class="btn btn-primary" id="e1-btn" onclick="avaliarPrompt('e1','fund1')">🤖 Avaliar com IA</button>
+        <button class="btn btn-secondary" onclick="hint('Comece com: Você é um [especialidade em saúde]. Depois especifique: o tema exato, para quem é o texto, o formato (artigo? lista? post?), tamanho e o que evitar.')">💡 Dica</button>
+        <span class="ccount" id="e1-cc">0 chars</span>
+      </div>
+      <div class="aifb" id="e1-fb"></div>
+    </div>
+    <div class="exarea">
+      <div class="exbadge">🏋️ Exercício 1.2 — Do Zero</div>
+      <h3>Crie um Prompt Completo do Zero</h3>
+      <p class="exdesc">Crie um prompt completo com os 5 elementos para esta situação: você quer pedir à IA para criar um plano de estudos personalizado para aprender inglês do zero em 6 meses, tendo apenas 1 hora por dia disponível.</p>
+      <textarea class="pta" id="e2a" placeholder="Escreva seu prompt aqui..." oninput="cc('e2')"></textarea>
+      <div class="exactions">
+        <button class="btn btn-primary" id="e2-btn" onclick="avaliarPrompt('e2','fund2')">🤖 Avaliar com IA</button>
+        <button class="btn btn-secondary" onclick="hint('Inclua: quem vai criar o plano (coach/professor de inglês), o nível atual do aluno, disponibilidade de tempo, recursos preferidos, e como quer receber o resultado (semana a semana? tópico a tópico?).')">💡 Dica</button>
+        <span class="ccount" id="e2-cc">0 chars</span>
+      </div>
+      <div class="aifb" id="e2-fb"></div>
+    </div>
+    <div class="done-banner" id="m1-banner">
+      <span style="font-size:26px">🎉</span>
+      <div><strong style="color:var(--green)">Módulo 1 Concluído!</strong><p style="font-size:12px;color:var(--text2);margin-top:2px">Você ganhou XP suficiente para desbloquear o Módulo 2!</p></div>
+      <button class="btn btn-primary" style="margin-left:auto" onclick="nav('mod2')">Módulo 2 →</button>
+    </div>
+  </div>
+  <div id="mod1-cs" class="tc">
+    <div class="card"><h3 style="margin-bottom:10px">📋 Cheat Sheet — Módulo 1</h3>
+    <div class="formula"><div class="ftitle">Fórmula</div><span class="pp">"Você é [PAPEL]. </span><span class="pg">[VERBO] [O QUÊ]. </span><span class="pv">Contexto: [QUEM/PARA QUÊ]. </span><span class="pn">Formato: [COMO QUER]. </span><span class="pb2">Restrições: [O QUE NÃO QUER]."</span></div></div>
+    <div class="card"><h3 style="margin-bottom:8px">🎭 Papéis Úteis</h3><p style="font-size:12px;color:var(--text2)">Especialista em [área] · Professor universitário · Copywriter sênior · Coach executivo · Analista de dados · Jornalista · Advogado · Médico · Engenheiro · Diretor criativo · Consultor · Psicólogo</p></div>
+    <div class="card"><h3 style="margin-bottom:8px">✅ Verbos de Ação</h3><p style="font-size:12px;color:var(--text2)">Analise · Crie · Liste · Compare · Explique · Resuma · Reescreva · Critique · Proponha · Classifique · Elabore · Simplifique · Adapte · Gere · Estruture · Desenvolva</p></div>
+  </div>
+  <div class="lnav">
+    <button class="btn btn-secondary" onclick="nav('home')">← Início</button>
+    <button class="btn btn-primary" id="m1-nxt" onclick="tryNav('mod2')" disabled>Módulo 2 →</button>
+  </div>
+</div>
+
+<!-- MOD 2 -->
+<div class="page" id="page-mod2">
+  <div class="lhdr"><div class="lbc">📍 <span>Módulo 2</span> — Engenharia</div><div class="ltitle">✍️ Técnicas Avançadas de Construção</div><div class="lmeta"><span>⏱️ ~40 min</span><span class="tag text">3 Partes + Exercícios</span></div></div>
+  <div class="tabs">
+    <div class="tab active" onclick="st('mod2','a')">📖 Parte 1</div>
+    <div class="tab" onclick="st('mod2','b')">📖 Parte 2</div>
+    <div class="tab" onclick="st('mod2','c')">📖 Parte 3</div>
+    <div class="tab" onclick="st('mod2','ex')">🏋️ Exercícios</div>
+    <div class="tab" onclick="st('mod2','cs')">📋 Ref.</div>
+  </div>
+  <div id="mod2-a" class="tc active">
+    <div class="cb">
+      <h3>Zero-Shot vs. Few-Shot Learning</h3>
+      <p>Uma das técnicas mais impactantes em engenharia de prompts é o conceito de <strong>aprendizado por exemplos</strong>. Quando você dá exemplos antes de fazer um pedido, a IA calibra sua resposta com muito mais precisão.</p>
+      <h4>Zero-Shot: Sem exemplos</h4>
+      <p>Você faz o pedido diretamente, sem demonstrar o padrão desejado. Funciona bem para tarefas simples e bem definidas, mas pode gerar resultados inconsistentes em tarefas mais específicas ou com formato não-óbvio.</p>
+      <h4>Few-Shot: Com exemplos (muito mais poderoso)</h4>
+      <p>Você fornece 2-5 exemplos do padrão antes de fazer o pedido real. Isso é especialmente poderoso quando você quer um formato específico, um tom particular, ou uma estrutura que seria difícil de descrever apenas com palavras.</p>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">FEW-SHOT — EXEMPLO REAL</span></div>
+<span class="pn">Classifique o sentimento dos comentários abaixo:</span><br><br>
+<span class="pv">Exemplo 1:</span><span style="color:#aaa"> "Adorei, chegou rápido!" → </span><span class="pg">POSITIVO</span><br>
+<span class="pv">Exemplo 2:</span><span style="color:#aaa"> "Produto quebrado, sem resposta." → </span><span class="pb2">NEGATIVO</span><br>
+<span class="pv">Exemplo 3:</span><span style="color:#aaa"> "Ok, nada especial." → </span><span style="color:#fcd34d">NEUTRO</span><br><br>
+<span class="pn">Agora classifique:</span><span style="color:#aaa"> "Preço alto mas qualidade surpreendente"</span></div>
+      <div class="callout tip"><span class="cl-ic">💡</span><div>Use few-shot quando quiser: formato de saída específico, estilo de escrita particular, ou lógica de classificação não-óbvia. 3 exemplos costumam ser suficientes.</div></div>
+    </div>
+  </div>
+  <div id="mod2-b" class="tc">
+    <div class="cb">
+      <h3>Chain of Thought — Raciocínio em Cadeia</h3>
+      <p>Esta técnica, publicada em pesquisa do Google em 2022, mostrou que pedir explicitamente à IA para "pensar passo a passo" melhora drasticamente a precisão em problemas que exigem raciocínio lógico.</p>
+      <p>O mecanismo é simples: ao invés de pular direto para a conclusão, a IA verbaliza cada etapa do raciocínio. Isso a obriga a seguir uma lógica coerente e reduz erros significativamente.</p>
+      <div class="cmp">
+        <div class="cmpbox bad"><div class="cmplbl">❌ Sem CoT</div><span style="color:#aaa">Se uma loja tem 40% de desconto e o produto custa R$250, qual o preço final com frete de R$15?</span></div>
+        <div class="cmpbox good"><div class="cmplbl">✅ Com Chain of Thought</div><span class="pg">Se uma loja tem 40% de desconto e o produto custa R$250, qual o preço final com frete de R$15? Pense passo a passo, mostrando cada cálculo antes da resposta final.</span></div>
+      </div>
+      <h4>Frases que Ativam o CoT</h4>
+      <div class="cblk"><span class="pg">"Pense passo a passo"</span><br><span class="pg">"Raciocine antes de responder"</span><br><span class="pg">"Mostre seu processo de pensamento"</span><br><span class="pg">"Explique cada etapa do seu raciocínio"</span><br><span class="pg">"Antes de responder, liste todos os fatores relevantes"</span></div>
+      <h4>Quando Usar CoT</h4>
+      <ul>
+        <li>Problemas matemáticos ou lógicos complexos</li>
+        <li>Análise de prós e contras de uma decisão importante</li>
+        <li>Diagnóstico de problemas técnicos</li>
+        <li>Avaliação estratégica de negócios</li>
+        <li>Qualquer situação onde a lógica do raciocínio importa tanto quanto a conclusão</li>
+      </ul>
+    </div>
+  </div>
+  <div id="mod2-c" class="tc">
+    <div class="cb">
+      <h3>Controle de Tom, Voz e Iteração</h3>
+      <h4>A Escala de Tom</h4>
+      <p>A IA pode adotar qualquer tom que você especificar. Seja preciso — "profissional" é diferente de "formal acadêmico" é diferente de "executivo C-level".</p>
+      <div class="cblk"><span class="pp">Muito formal:</span><span style="color:#aaa"> "linguagem de relatório para board de diretores"</span><br><span class="pp">Formal:</span><span style="color:#aaa"> "profissional, claro e objetivo, sem gírias"</span><br><span class="pp">Informativo:</span><span style="color:#aaa"> "tom de um bom professor explicando para adultos"</span><br><span class="pp">Casual:</span><span style="color:#aaa"> "como em conversa entre amigos inteligentes"</span><br><span class="pp">Jovem/Digital:</span><span style="color:#aaa"> "como influenciador para geração Z no Instagram"</span><br><span class="pp">Empático:</span><span style="color:#aaa"> "caloroso, acolhedor, como um mentor experiente"</span></div>
+      <h4>A Arte da Iteração</h4>
+      <p>Profissionais não aceitam a primeira resposta como definitiva — eles <strong>iteram</strong>. Cada rodada refina e melhora. Pense nisso como escultura: você vai removendo o que não quer até chegar no que precisa.</p>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">PROMPTS DE REFINAMENTO</span></div>
+<span class="pn">"Reescreva o segundo parágrafo com tom mais urgente"</span><br>
+<span class="pn">"Torne a conclusão mais impactante, termine com pergunta reflexiva"</span><br>
+<span class="pn">"Reduza para metade do tamanho sem perder os pontos principais"</span><br>
+<span class="pn">"Adicione um exemplo prático concreto para cada benefício"</span><br>
+<span class="pn">"Adapte esse email para ser enviado por WhatsApp — mais curto e casual"</span></div>
+      <div class="callout imp"><span class="cl-ic">🎯</span><div><strong>Teste poderoso:</strong> Pegue qualquer prompt e adicione "explique para [público específico]". Veja como a resposta muda radicalmente. Isso demonstra o poder do contexto de audiência.</div></div>
+    </div>
+  </div>
+  <div id="mod2-ex" class="tc">
+    <div class="exarea">
+      <div class="exbadge">🏋️ Exercício 2.1 — Few-Shot</div>
+      <h3>Crie um Prompt com Exemplos</h3>
+      <p class="exdesc">Crie um prompt few-shot para ensinar à IA a classificar ideias de negócio como VIÁVEL, ARRISCADO ou INVIÁVEL. Forneça pelo menos 3 exemplos com justificativa antes do pedido real.</p>
+      <textarea class="pta" id="e3a" placeholder="Escreva seu prompt few-shot aqui..." oninput="cc('e3')" style="min-height:145px"></textarea>
+      <div class="exactions">
+        <button class="btn btn-primary" id="e3-btn" onclick="avaliarPrompt('e3','fewshot')">🤖 Avaliar com IA</button>
+        <button class="btn btn-secondary" onclick="hint('Estrutura: Classifique ideias como VIÁVEL/ARRISCADO/INVIÁVEL. Exemplos: [ideia 1] → VIÁVEL porque [razão]. [ideia 2] → INVIÁVEL porque [razão]. Agora classifique: [nova ideia].')">💡 Dica</button>
+        <span class="ccount" id="e3-cc">0 chars</span>
+      </div>
+      <div class="aifb" id="e3-fb"></div>
+    </div>
+    <div class="exarea">
+      <div class="exbadge">🏋️ Exercício 2.2 — Chain of Thought</div>
+      <h3>Aplique o Raciocínio em Cadeia</h3>
+      <p class="exdesc">Reescreva este prompt usando CoT para análise de negócio profunda: "Devo abrir uma loja de roupas online?" — transforme para que a IA analise sistematicamente todos os fatores relevantes passo a passo.</p>
+      <textarea class="pta" id="e4a" placeholder="Escreva com Chain of Thought..." oninput="cc('e4')"></textarea>
+      <div class="exactions">
+        <button class="btn btn-primary" id="e4-btn" onclick="avaliarPrompt('e4','cot')">🤖 Avaliar com IA</button>
+        <button class="btn btn-secondary" onclick="hint('Use a frase pense passo a passo e peça análise de: mercado-alvo, capital inicial, concorrência, diferenciais possíveis, riscos principais e indicadores de sucesso — antes da recomendação final.')">💡 Dica</button>
+        <span class="ccount" id="e4-cc">0 chars</span>
+      </div>
+      <div class="aifb" id="e4-fb"></div>
+    </div>
+    <div class="done-banner" id="m2-banner">
+      <span style="font-size:26px">🎉</span>
+      <div><strong style="color:var(--green)">Módulo 2 Concluído!</strong><p style="font-size:12px;color:var(--text2);margin-top:2px">Próximo: Geração de Imagens com IA.</p></div>
+      <button class="btn btn-primary" style="margin-left:auto" onclick="nav('mod3')">Módulo 3 →</button>
+    </div>
+  </div>
+  <div id="mod2-cs" class="tc">
+    <div class="card"><h3 style="margin-bottom:9px">📋 Técnicas do Módulo 2</h3><p style="font-size:12px;color:var(--text2);line-height:1.9"><strong style="color:var(--accent2)">Zero-Shot:</strong> Pedido direto sem exemplos<br><strong style="color:var(--accent2)">Few-Shot:</strong> 2-5 exemplos antes do pedido<br><strong style="color:var(--accent2)">Chain of Thought:</strong> "Pense passo a passo"<br><strong style="color:var(--accent2)">Iteração:</strong> Refinar com prompts de ajuste<br><strong style="color:var(--accent2)">Audiência:</strong> "Explique para [público específico]"</p></div>
+  </div>
+  <div class="lnav">
+    <button class="btn btn-secondary" onclick="nav('mod1')">← Módulo 1</button>
+    <button class="btn btn-primary" id="m2-nxt" onclick="tryNav('mod3')" disabled>Módulo 3 →</button>
+  </div>
+</div>
+
+<!-- MOD 3 -->
+<div class="page" id="page-mod3">
+  <div class="lhdr"><div class="lbc">📍 <span>Módulo 3</span> — Imagens</div><div class="ltitle">🖼️ Criando Arte e Imagens com IA</div><div class="lmeta"><span>⏱️ ~35 min</span><span class="tag image">Arte IA</span></div></div>
+  <div class="tabs">
+    <div class="tab active" onclick="st('mod3','a')">📖 Parte 1</div>
+    <div class="tab" onclick="st('mod3','b')">📖 Parte 2</div>
+    <div class="tab" onclick="st('mod3','c')">📖 Parte 3</div>
+    <div class="tab" onclick="st('mod3','ex')">🏋️ Exercício</div>
+    <div class="tab" onclick="st('mod3','cs')">📋 Ref.</div>
+  </div>
+  <div id="mod3-a" class="tc active">
+    <div class="cb">
+      <h3>O Universo das IAs de Imagem</h3>
+      <table class="ait"><tr><th>Ferramenta</th><th>Ponto Forte</th><th>Ideal Para</th></tr><tr><td class="ai-nm">Midjourney</td><td>Qualidade artística única</td><td>Arte, branding, ilustração</td></tr><tr><td class="ai-nm">DALL-E 3</td><td>Precisão, texto em imagem</td><td>Comercial, produtos, blog</td></tr><tr><td class="ai-nm">Stable Diffusion</td><td>Open source, customizável</td><td>Controle total, uso local</td></tr><tr><td class="ai-nm">Adobe Firefly</td><td>Seguro comercialmente</td><td>Profissionais criativos</td></tr><tr><td class="ai-nm">Ideogram 2.0</td><td>Texto em imagens perfeito</td><td>Logos, cartazes, banners</td></tr><tr><td class="ai-nm">Flux</td><td>Fotorrealismo extremo</td><td>Fotos produto, pessoas</td></tr></table>
+      <h4>Como Essas IAs Funcionam</h4>
+      <p>As IAs de imagem usam um processo chamado <strong>difusão</strong>: elas partem de ruído aleatório e vão progressivamente "limpando" a imagem, guiadas pelo seu prompt. É por isso que prompts mais descritivos produzem resultados mais precisos — a IA tem mais instruções para guiar o processo.</p>
+      <div class="callout info"><span class="cl-ic">💡</span><div>Diferente das IAs de texto, nas IAs de imagem <strong>a ordem das palavras importa</strong>. O que vem primeiro no prompt tem mais peso. Comece sempre pelo mais importante: o sujeito principal.</div></div>
+    </div>
+  </div>
+  <div id="mod3-b" class="tc">
+    <div class="cb">
+      <h3>A Anatomia do Prompt Visual Perfeito</h3>
+      <div class="formula"><div class="ftitle">🖼️ Fórmula Visual Completa</div><span class="pp">[SUJEITO DETALHADO]</span>, <span class="pg">[AÇÃO/POSE]</span>, <span class="pv">[AMBIENTE + HORA]</span>, <span class="pn">estilo [ARTE]</span>, <span class="pb2">[ILUMINAÇÃO]</span>, <span style="color:#f9a8d4">[CÂMERA]</span>, <span class="pv">[QUALIDADE]</span></div>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">EXEMPLO PROFISSIONAL COMPLETO</span></div>
+<span class="pp">Guerreira indígena brasileira com armadura ritual dourada,</span><br>
+<span class="pg">em pé sobre ruínas de metrópole futurista, olhar determinado,</span><br>
+<span class="pv">ao entardecer com céu em tons magenta e âmbar,</span><br>
+<span class="pn">estilo concept art de videogame AAA, arte digital hiper-detalhada,</span><br>
+<span class="pb2">iluminação cinematográfica de contra-luz com rim light dourado,</span><br>
+<span style="color:#f9a8d4">câmera baixa olhando para cima, perspectiva heroica épica,</span><br>
+<span class="pv">altamente detalhado, 8K, render fotorrealista, obra-prima</span></div>
+      <h4>Estilos Artísticos Essenciais</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px">
+        <div style="background:var(--bg);border-radius:var(--r2);padding:9px"><div style="font-size:11px;font-weight:700;color:var(--accent2);margin-bottom:4px">Fotografia</div><div style="font-size:11px;color:var(--text2)">fotorrealista · DSLR bokeh · HDR · analógico · editorial</div></div>
+        <div style="background:var(--bg);border-radius:var(--r2);padding:9px"><div style="font-size:11px;font-weight:700;color:var(--pink);margin-bottom:4px">Ilustração</div><div style="font-size:11px;color:var(--text2)">aquarela · flat design · mangá · Pixar · comics · storybook</div></div>
+        <div style="background:var(--bg);border-radius:var(--r2);padding:9px"><div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:4px">Arte Clássica</div><div style="font-size:11px;color:var(--text2)">impressionismo · barroco · art nouveau · surrealismo</div></div>
+        <div style="background:var(--bg);border-radius:var(--r2);padding:9px"><div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:4px">Digital Moderno</div><div style="font-size:11px;color:var(--text2)">cyberpunk · synthwave · lo-fi · dark fantasy · sci-fi</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="mod3-c" class="tc">
+    <div class="cb">
+      <h3>Iluminação, Câmera e Negative Prompts</h3>
+      <h4>Iluminação — O Segredo dos Pros</h4>
+      <div class="cblk"><span class="pv">golden hour lighting</span><span style="color:#aaa"> — luz quente dourada do pôr do sol</span><br><span class="pv">cinematic lighting</span><span style="color:#aaa"> — iluminação dramática de filme</span><br><span class="pv">soft box lighting</span><span style="color:#aaa"> — luz difusa e suave de estúdio</span><br><span class="pv">neon lights</span><span style="color:#aaa"> — luzes coloridas de néon urbano</span><br><span class="pv">rim light</span><span style="color:#aaa"> — borda iluminada separando sujeito do fundo</span><br><span class="pv">chiaroscuro</span><span style="color:#aaa"> — contraste extremo luz/sombra estilo Caravaggio</span><br><span class="pv">volumetric lighting</span><span style="color:#aaa"> — raios de luz visíveis no ar</span></div>
+      <h4>Negative Prompts — O que Remover</h4>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">NEGATIVE PROMPT PADRÃO</span></div><span class="pb2">blurry, low quality, deformed, ugly, distorted, extra limbs,<br>bad anatomy, watermark, text, signature, noise, oversaturated,<br>lowres, jpeg artifacts</span></div>
+      <h4>Palavras de Qualidade</h4>
+      <p style="font-size:12px;color:var(--text2)">altamente detalhado · 8K resolução · obra-prima · iluminação profissional · sharp focus · intricate details · award winning · trending on artstation · masterpiece · best quality</p>
+    </div>
+  </div>
+  <div id="mod3-ex" class="tc">
+    <div class="exarea">
+      <div class="exbadge">🏋️ Exercício 3.1 — Prompt Visual</div>
+      <h3>Crie um Prompt de Imagem Profissional</h3>
+      <p class="exdesc">Crie um prompt visual completo para: uma cena futurista de uma cidade brasileira à noite sob chuva forte em 2150. Use sujeito, ambiente, estilo artístico, iluminação, perspectiva de câmera e palavras de qualidade.</p>
+      <textarea class="pta" id="e5a" placeholder="Escreva seu prompt visual completo aqui..." oninput="cc('e5')" style="min-height:135px"></textarea>
+      <div class="exactions">
+        <button class="btn btn-primary" id="e5-btn" onclick="avaliarPrompt('e5','imagem')">🤖 Avaliar com IA</button>
+        <button class="btn btn-secondary" onclick="hint('Inclua: sujeito com detalhes visuais, o ambiente com hora (noite + chuva), estilo artístico (cyberpunk? realista?), iluminação especial (néon refletindo na chuva!), perspectiva e palavras de qualidade como 8K.')">💡 Dica</button>
+        <span class="ccount" id="e5-cc">0 chars</span>
+      </div>
+      <div class="aifb" id="e5-fb"></div>
+    </div>
+    <div class="done-banner" id="m3-banner">
+      <span style="font-size:26px">🎉</span>
+      <div><strong style="color:var(--green)">Módulo 3 Concluído!</strong><p style="font-size:12px;color:var(--text2);margin-top:2px">Próximo: Vídeo e Mídia com IA.</p></div>
+      <button class="btn btn-primary" style="margin-left:auto" onclick="nav('mod4')">Módulo 4 →</button>
+    </div>
+  </div>
+  <div id="mod3-cs" class="tc">
+    <div class="card"><h3 style="margin-bottom:9px">📋 Template Visual</h3><div class="cblk" style="font-size:11px"><span class="pp">[Sujeito detalhado],</span> <span class="pg">[ação/pose],</span> <span class="pv">[ambiente + hora],</span> <span class="pn">estilo [tipo de arte],</span> <span class="pb2">[iluminação],</span> <span style="color:#f9a8d4">[perspectiva],</span> <span class="pv">8K, altamente detalhado,</span> <span class="pb2">negative: blurry, deformed</span></div></div>
+  </div>
+  <div class="lnav">
+    <button class="btn btn-secondary" onclick="nav('mod2')">← Módulo 2</button>
+    <button class="btn btn-primary" id="m3-nxt" onclick="tryNav('mod4')" disabled>Módulo 4 →</button>
+  </div>
+</div>
+
+<!-- MOD 4 -->
+<div class="page" id="page-mod4">
+  <div class="lhdr"><div class="lbc">📍 <span>Módulo 4</span></div><div class="ltitle">🎬 Vídeo, Áudio e Mídia com IA</div><div class="lmeta"><span>⏱️ ~30 min</span><span class="tag video">Vídeo</span></div></div>
+  <div class="tabs"><div class="tab active" onclick="st('mod4','a')">📖 Teoria</div><div class="tab" onclick="st('mod4','ex')">🏋️ Exercício</div></div>
+  <div id="mod4-a" class="tc active">
+    <div class="cb">
+      <h3>Ferramentas de Vídeo IA em 2025</h3>
+      <table class="ait"><tr><th>Ferramenta</th><th>Especialidade</th><th>Duração</th></tr><tr><td class="ai-nm">Sora (OpenAI)</td><td>Vídeos cinematográficos realistas</td><td>até 20s</td></tr><tr><td class="ai-nm">Runway Gen-3</td><td>Edição e geração profissional</td><td>até 10s</td></tr><tr><td class="ai-nm">Kling AI</td><td>Qualidade cinematográfica</td><td>até 10s</td></tr><tr><td class="ai-nm">Pika Labs</td><td>Animação de imagens estáticas</td><td>3-5s</td></tr><tr><td class="ai-nm">HeyGen</td><td>Avatar falante com sua voz</td><td>ilimitado</td></tr></table>
+      <h3 style="margin-top:18px">Fórmula para Vídeo</h3>
+      <div class="formula"><div class="ftitle">🎬 Estrutura de Prompt de Vídeo</div><span class="pb2">[PLANO CÂMERA]</span> de <span class="pp">[SUJEITO + AÇÃO]</span>, <span class="pv">[AMBIENTE + LUZ]</span>, câmera <span class="pn">[MOVIMENTO]</span>, <span class="pg">[ESTILO + QUALIDADE]</span></div>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">EXEMPLO COMPLETO</span></div><span class="pp">Plano americano de barista preparando espresso,</span><br><span class="pv">café moderno com luz natural de janela ao entardecer,</span><br><span class="pn">câmera em dolly lento aproximando do copo,</span><br><span class="pg">estilo comercial profissional, cores quentes, 4K cinematic</span></div>
+      <h4>Planos e Movimentos de Câmera</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px"><div style="background:var(--bg);border-radius:var(--r2);padding:9px;font-size:11px"><span class="pn">Close-up</span> — rosto ou detalhe</div><div style="background:var(--bg);border-radius:var(--r2);padding:9px;font-size:11px"><span class="pn">Plano geral</span> — personagem + cenário</div><div style="background:var(--bg);border-radius:var(--r2);padding:9px;font-size:11px"><span class="pn">Drone shot</span> — visão aérea</div><div style="background:var(--bg);border-radius:var(--r2);padding:9px;font-size:11px"><span class="pn">Dolly in/out</span> — câmera avança/recua</div><div style="background:var(--bg);border-radius:var(--r2);padding:9px;font-size:11px"><span class="pn">Pan</span> — rotação horizontal</div><div style="background:var(--bg);border-radius:var(--r2);padding:9px;font-size:11px"><span class="pn">Tracking shot</span> — segue o sujeito</div></div>
+      <h3 style="margin-top:18px">IA para Áudio</h3>
+      <table class="ait"><tr><th>Ferramenta</th><th>O que Faz</th></tr><tr><td class="ai-nm">ElevenLabs</td><td>Voz humana realista, clone de voz, narração</td></tr><tr><td class="ai-nm">Suno AI</td><td>Músicas completas com letra em qualquer estilo</td></tr><tr><td class="ai-nm">Udio</td><td>Músicas de qualidade profissional</td></tr><tr><td class="ai-nm">Adobe Podcast</td><td>Limpeza e melhoria de áudio com IA</td></tr></table>
+    </div>
+  </div>
+  <div id="mod4-ex" class="tc">
+    <div class="exarea">
+      <div class="exbadge">🏋️ Exercício 4.1 — Prompt de Vídeo</div>
+      <h3>Prompt para Vídeo Publicitário</h3>
+      <p class="exdesc">Crie um prompt completo para um vídeo promocional de 5-10 segundos de um tênis esportivo premium. Use: plano de câmera, movimento, sujeito detalhado, ambiente, iluminação e estilo cinematográfico.</p>
+      <textarea class="pta" id="e6a" placeholder="Escreva seu prompt de vídeo aqui..." oninput="cc('e6')" style="min-height:125px"></textarea>
+      <div class="exactions"><button class="btn btn-primary" id="e6-btn" onclick="avaliarPrompt('e6','video')">🤖 Avaliar com IA</button><span class="ccount" id="e6-cc">0 chars</span></div>
+      <div class="aifb" id="e6-fb"></div>
+    </div>
+    <div class="done-banner" id="m4-banner"><span style="font-size:26px">🎉</span><div><strong style="color:var(--green)">Módulo 4 Concluído!</strong></div><button class="btn btn-primary" style="margin-left:auto" onclick="nav('mod5')">Módulo 5 →</button></div>
+  </div>
+  <div class="lnav"><button class="btn btn-secondary" onclick="nav('mod3')">← Módulo 3</button><button class="btn btn-primary" id="m4-nxt" onclick="tryNav('mod5')" disabled>Módulo 5 →</button></div>
+</div>
+
+<!-- MOD 5 -->
+<div class="page" id="page-mod5">
+  <div class="lhdr"><div class="lbc">📍 <span>Módulo 5</span></div><div class="ltitle">💻 Código e Desenvolvimento com IA</div><div class="lmeta"><span>⏱️ ~35 min</span><span class="tag code">Dev</span></div></div>
+  <div class="tabs"><div class="tab active" onclick="st('mod5','a')">📖 Teoria</div><div class="tab" onclick="st('mod5','ex')">🏋️ Exercício</div></div>
+  <div id="mod5-a" class="tc active">
+    <div class="cb">
+      <h3>IA como Parceiro de Desenvolvimento</h3>
+      <p>IAs de código não substituem desenvolvedores — elas os tornam 3-10x mais produtivos. A chave é saber fazer os pedidos certos, com o contexto adequado.</p>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">TEMPLATE UNIVERSAL PARA CÓDIGO</span></div>
+<span class="pg">Você é desenvolvedor [LINGUAGEM] sênior experiente.</span><br><br>
+<span class="pn">Preciso de função que:</span><br>
+<span class="pv">- [O QUE FAZ em 1 linha]</span><br>
+<span class="pv">- Recebe: [PARÂMETROS com tipos]</span><br>
+<span class="pv">- Retorna: [RESULTADO com tipo]</span><br><br>
+<span class="pn">Exemplo:</span><br>
+<span class="pp">Input: [EXEMPLO REAL]</span><br>
+<span class="pp">Output esperado: [EXEMPLO REAL]</span><br><br>
+<span class="pb2">Requisitos: tratamento de erros, código limpo, comentários.</span></div>
+      <div class="callout tip"><span class="cl-ic">📝</span><div><strong>Escrever:</strong> Use o template acima com exemplos de input/output</div></div>
+      <div class="callout info"><span class="cl-ic">🔍</span><div><strong>Debug:</strong> "Este código retorna erro X. Analise, explique e corrija: [CÓDIGO]"</div></div>
+      <div class="callout warn"><span class="cl-ic">⚡</span><div><strong>Otimizar:</strong> "Reescreva para melhor performance. Explique as mudanças: [CÓDIGO]"</div></div>
+      <table class="ait" style="margin-top:14px"><tr><th>Ferramenta</th><th>Melhor Para</th></tr><tr><td class="ai-nm">GitHub Copilot</td><td>Autocomplete em tempo real no editor</td></tr><tr><td class="ai-nm">Claude</td><td>Código complexo, arquitetura, revisão detalhada</td></tr><tr><td class="ai-nm">Cursor AI</td><td>Editar codebase inteiro com IA no contexto</td></tr><tr><td class="ai-nm">v0 (Vercel)</td><td>UI/Frontend React instantâneo</td></tr></table>
+    </div>
+  </div>
+  <div id="mod5-ex" class="tc">
+    <div class="exarea">
+      <div class="exbadge">🏋️ Exercício 5.1 — Prompt de Código</div>
+      <h3>Prompt Técnico Completo</h3>
+      <p class="exdesc">Crie um prompt profissional para pedir à IA uma calculadora de IMC (Índice de Massa Corporal) em Python. Use o template: linguagem, o que a função faz, parâmetros, exemplo de input/output e requisitos.</p>
+      <textarea class="pta" id="e7a" placeholder="Escreva seu prompt de código aqui..." oninput="cc('e7')" style="min-height:155px"></textarea>
+      <div class="exactions"><button class="btn btn-primary" id="e7-btn" onclick="avaliarPrompt('e7','codigo')">🤖 Avaliar com IA</button><span class="ccount" id="e7-cc">0 chars</span></div>
+      <div class="aifb" id="e7-fb"></div>
+    </div>
+    <div class="done-banner" id="m5-banner"><span style="font-size:26px">🎉</span><div><strong style="color:var(--green)">Módulo 5 Concluído!</strong></div><button class="btn btn-primary" style="margin-left:auto" onclick="nav('mod6')">Módulo 6 →</button></div>
+  </div>
+  <div class="lnav"><button class="btn btn-secondary" onclick="nav('mod4')">← Módulo 4</button><button class="btn btn-primary" id="m5-nxt" onclick="tryNav('mod6')" disabled>Módulo 6 →</button></div>
+</div>
+
+<!-- MOD 6 -->
+<div class="page" id="page-mod6">
+  <div class="lhdr"><div class="lbc">📍 <span>Módulo 6</span></div><div class="ltitle">🤖 O Universo das IAs em 2025</div></div>
+  <div class="tabs"><div class="tab active" onclick="st('mod6','a')">📖 Guia</div><div class="tab" onclick="st('mod6','ex')">🏋️ Exercício</div></div>
+  <div id="mod6-a" class="tc active">
+    <div class="cb">
+      <div class="card" style="border-left:3px solid #10a37f"><h3>🟢 ChatGPT (OpenAI)</h3><p><strong>Melhor em:</strong> Versatilidade geral, criatividade, Code Interpreter, plugins, DALL-E integrado.<br><strong>Use quando:</strong> precisar de um assistente geral, gerar imagens + texto, usar ferramentas como calculadora.<br><strong>Planos:</strong> Free, Plus $20/mês (GPT-4o), Pro $200/mês.</p></div>
+      <div class="card" style="border-left:3px solid #d36431"><h3>🟠 Claude (Anthropic)</h3><p><strong>Melhor em:</strong> Análise de documentos longos (200k tokens!), raciocínio profundo, código de produção, seguir instruções complexas com precisão.<br><strong>Use quando:</strong> analisar contratos/PDFs longos, código que precisa funcionar de verdade, tarefas que exigem precisão e nuance.<br><strong>Planos:</strong> Free, Pro $20/mês.</p></div>
+      <div class="card" style="border-left:3px solid #4285f4"><h3>🔵 Gemini (Google)</h3><p><strong>Melhor em:</strong> Integração com Google (Drive, Docs, Gmail), busca em tempo real, análise de vídeos YouTube, multimodal nativo.<br><strong>Use quando:</strong> trabalhar no Google Workspace, precisar de dados atuais da web.<br><strong>Planos:</strong> Free, Advanced $19.99/mês.</p></div>
+      <div class="card" style="border-left:3px solid #6366f1"><h3>🟣 Grok (xAI)</h3><p><strong>Melhor em:</strong> Informações em tempo real do X/Twitter, menos restrições, personalidade mais direta e humor.<br><strong>Use quando:</strong> analisar tendências sociais, precisar de informações recentes do X.</p></div>
+      <table class="ait"><tr><th>Tarefa</th><th>IA Recomendada</th></tr><tr><td>Criatividade geral</td><td class="ai-nm">ChatGPT</td></tr><tr><td>Documento longo</td><td class="ai-nm">Claude</td></tr><tr><td>Código complexo</td><td class="ai-nm">Claude ou ChatGPT</td></tr><tr><td>Dados atuais/pesquisa</td><td class="ai-nm">Gemini + Perplexity</td></tr><tr><td>Imagens</td><td class="ai-nm">Midjourney / DALL-E</td></tr><tr><td>Vídeo</td><td class="ai-nm">Sora / Runway / Kling</td></tr><tr><td>Voz</td><td class="ai-nm">ElevenLabs</td></tr><tr><td>Música</td><td class="ai-nm">Suno AI</td></tr></table>
+    </div>
+  </div>
+  <div id="mod6-ex" class="tc">
+    <div class="exarea">
+      <div class="exbadge">🏋️ Exercício 6.1 — Escolha Estratégica</div>
+      <h3>IA Certa + Prompt Completo</h3>
+      <p class="exdesc">Você quer lançar um curso online de culinária. Escolha a IA mais adequada para criar uma estratégia de lançamento em 30 dias. Justifique a escolha E escreva o prompt completo com todos os elementos.</p>
+      <textarea class="pta" id="e8a" placeholder="Qual IA escolheria? Por quê? Qual o prompt completo?" oninput="cc('e8')" style="min-height:155px"></textarea>
+      <div class="exactions"><button class="btn btn-primary" id="e8-btn" onclick="avaliarPrompt('e8','ia_choice')">🤖 Avaliar com IA</button><span class="ccount" id="e8-cc">0 chars</span></div>
+      <div class="aifb" id="e8-fb"></div>
+    </div>
+    <div class="done-banner" id="m6-banner"><span style="font-size:26px">🎉</span><div><strong style="color:var(--green)">Módulo 6 Concluído!</strong></div><button class="btn btn-primary" style="margin-left:auto" onclick="nav('mod7')">Módulo 7 →</button></div>
+  </div>
+  <div class="lnav"><button class="btn btn-secondary" onclick="nav('mod5')">← Módulo 5</button><button class="btn btn-primary" id="m6-nxt" onclick="tryNav('mod7')" disabled>Módulo 7 →</button></div>
+</div>
+
+<!-- MOD 7 -->
+<div class="page" id="page-mod7">
+  <div class="lhdr"><div class="lbc">📍 <span>Módulo 7</span></div><div class="ltitle">🔥 Técnicas Avançadas Pro</div></div>
+  <div class="tabs"><div class="tab active" onclick="st('mod7','a')">📖 Teoria</div><div class="tab" onclick="st('mod7','ex')">🏋️ Exercício</div></div>
+  <div id="mod7-a" class="tc active">
+    <div class="cb">
+      <h3>Tree of Thought (ToT)</h3>
+      <p>Evolução do Chain of Thought. Em vez de um único raciocínio linear, você pede que a IA explore múltiplos caminhos simultâneos e sintetize a melhor solução combinando os insights de cada caminho.</p>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">TEMPLATE TREE OF THOUGHT</span></div><span class="pg">Imagine 3 especialistas diferentes analisando este problema.<br>Cada um vai raciocinar passo a passo de sua perspectiva.<br>Se um perceber que seu raciocínio está errado, ele recalibra.<br>Ao final, os 3 chegam a um consenso fundamentado.</span><br><br><span class="pn">Problema: [SEU PROBLEMA]</span></div>
+      <h3 style="margin-top:18px">Self-Refinement — Auto-Crítica</h3>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">TEMPLATE SELF-REFINEMENT</span></div><span class="pp">Passo 1: Responda a pergunta da melhor forma possível.</span><br><span class="pp">Passo 2: Critique sua resposta — liste 3 pontos fracos ou omissões.</span><br><span class="pp">Passo 3: Reescreva incorporando as melhorias do Passo 2.</span><br><br><span class="pn">Pergunta: [SUA PERGUNTA]</span></div>
+      <h3 style="margin-top:18px">RAG — Use Seu Próprio Conteúdo</h3>
+      <p>Você fornece o documento, a IA processa. Elimina alucinações e garante respostas baseadas na sua informação real.</p>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">TEMPLATE RAG</span></div><span class="pg">Com base EXCLUSIVAMENTE no texto abaixo, responda.<br>Não use conhecimento externo. Se não estiver no texto, diga "não encontrado".</span><br><br><span class="pv">DOCUMENTO:<br>[COLE SEU TEXTO AQUI]</span><br><br><span class="pn">PERGUNTAS: [...]</span></div>
+      <h3 style="margin-top:18px">System Prompts — Personalidade Permanente</h3>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">EXEMPLO SYSTEM PROMPT</span></div><span class="pg">Você é Ana, assistente da TechCorp especializada em suporte.</span><br><span class="pv">REGRAS PERMANENTES:<br>- Sempre em português brasileiro<br>- Tom: empático, profissional, objetivo<br>- Nunca mencione concorrentes<br>- Máximo 3 parágrafos por resposta<br>- Termine com pergunta de confirmação</span></div>
+    </div>
+  </div>
+  <div id="mod7-ex" class="tc">
+    <div class="exarea">
+      <div class="exbadge">🏋️ Exercício 7.1 — Self-Refinement</div>
+      <h3>Prompt com Auto-Crítica em 3 Passos</h3>
+      <p class="exdesc">Crie um prompt usando self-refinement para melhorar este texto de marketing fraco: "Nosso produto é ótimo e vai te ajudar muito no dia a dia". O prompt deve ter 3 passos explícitos: gerar, criticar e reescrever.</p>
+      <textarea class="pta" id="e9a" placeholder="Crie seu prompt com self-refinement em 3 passos..." oninput="cc('e9')" style="min-height:145px"></textarea>
+      <div class="exactions"><button class="btn btn-primary" id="e9-btn" onclick="avaliarPrompt('e9','avancado')">🤖 Avaliar com IA</button><span class="ccount" id="e9-cc">0 chars</span></div>
+      <div class="aifb" id="e9-fb"></div>
+    </div>
+    <div class="done-banner" id="m7-banner"><span style="font-size:26px">🎉</span><div><strong style="color:var(--green)">Módulo 7 Concluído!</strong></div><button class="btn btn-primary" style="margin-left:auto" onclick="nav('mod8')">Módulo 8 →</button></div>
+  </div>
+  <div class="lnav"><button class="btn btn-secondary" onclick="nav('mod6')">← Módulo 6</button><button class="btn btn-primary" id="m7-nxt" onclick="tryNav('mod8')" disabled>Módulo 8 →</button></div>
+</div>
+
+<!-- MOD 8 -->
+<div class="page" id="page-mod8">
+  <div class="lhdr"><div class="lbc">📍 <span>Módulo 8</span></div><div class="ltitle">🚀 Casos de Uso Reais</div></div>
+  <div class="tabs"><div class="tab active" onclick="st('mod8','a')">📖 Templates</div><div class="tab" onclick="st('mod8','ex')">🏆 Desafio Final</div></div>
+  <div id="mod8-a" class="tc active">
+    <div class="cb">
+      <h3>Templates Prontos por Área</h3>
+      <h4>Marketing e Conteúdo</h4>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">CALENDÁRIO INSTAGRAM</span></div><span class="pg">Você é estrategista de conteúdo digital sênior.</span><br><span class="pn">Crie calendário de 1 mês para Instagram sobre [NICHO].</span><br><span class="pv">Público: [DESC]. Tom: [TOM]. Meta: [OBJETIVO].</span><br><span class="pb2">Formato: tabela com data, tipo de post, tema, legenda (max 140 chars), hashtags.</span></div>
+      <h4>Negócios e Estratégia</h4>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">ANÁLISE SWOT COMPLETA</span></div><span class="pg">Aja como consultor estratégico sênior.</span><br><span class="pn">Faça análise SWOT detalhada para: [EMPRESA/IDEIA].</span><br><span class="pv">Contexto: [NEGÓCIO, MERCADO, MOMENTO ATUAL].</span><br><span class="pb2">Formato: 4 quadrantes com 5 itens cada + 3 recomendações com prazo.</span></div>
+      <h4>Educação e Aprendizado</h4>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">PLANO DE ESTUDOS</span></div><span class="pg">Você é mentor educacional especialista em [ASSUNTO].</span><br><span class="pn">Crie plano do zero ao intermediário em [ASSUNTO].</span><br><span class="pv">Prazo: [X] meses. Disponibilidade: [X] horas/semana.</span><br><span class="pb2">Formato: semana a semana, tópicos, recursos gratuitos, exercícios, como medir progresso.</span></div>
+      <h4>Comunicação Difícil</h4>
+      <div class="cblk"><div class="cbhdr"><span class="clbl">EMAIL / MENSAGEM DELICADA</span></div><span class="pg">Você é especialista em comunicação não-violenta.</span><br><span class="pn">Escreva [EMAIL/MSG] para [DESTINATÁRIO] sobre [ASSUNTO].</span><br><span class="pv">Situação: [CONTEXTO COMPLETO]. Objetivo: [O QUE QUER].</span><br><span class="pb2">Tom: respeitoso e firme. Sem passivo-agressividade. Máximo [X] parágrafos.</span></div>
+    </div>
+  </div>
+  <div id="mod8-ex" class="tc">
+    <div class="exarea" style="border-color:var(--gold)">
+      <div class="exbadge" style="background:rgba(251,191,36,.16);color:var(--gold)">🏆 DESAFIO FINAL</div>
+      <h3>O Maior Teste — Prompt da Sua Realidade</h3>
+      <p class="exdesc">Crie o prompt mais completo e profissional que você já fez, para uma situação REAL da sua vida. Use tudo que aprendeu: papel, tarefa, contexto rico, formato específico, restrições, tom, técnicas avançadas. A IA avalia em 5 dimensões com critérios profissionais.</p>
+      <div class="callout imp"><span class="cl-ic">🏆</span><div>Avaliado em 5 dimensões: Clareza · Especificidade · Estrutura · Criatividade · Impacto. Pontuação máxima: 100 pts.</div></div>
+      <textarea class="pta" id="efa" placeholder="Seu melhor prompt. Use tudo que aprendeu. Não tenha pressa..." oninput="cc('ef')" style="min-height:190px"></textarea>
+      <div class="exactions"><button class="btn btn-gold" id="ef-btn" onclick="avaliarPrompt('ef','final')">🏆 Avaliação Final</button><span class="ccount" id="ef-cc">0 chars</span></div>
+      <div class="aifb" id="ef-fb"></div>
+    </div>
+    <div class="done-banner" id="m8-banner" style="border-color:var(--gold)"><span style="font-size:26px">🎓</span><div><strong style="color:var(--gold)">Parabéns! Curso Concluído!</strong><p style="font-size:12px;color:var(--text2);margin-top:2px">Você é um Mestre de Prompts!</p></div><button class="btn btn-primary" style="margin-left:auto" onclick="nav('progress')">Ver Progresso →</button></div>
+  </div>
+  <div class="lnav"><button class="btn btn-secondary" onclick="nav('mod7')">← Módulo 7</button><button class="btn btn-primary" onclick="nav('progress')">📊 Ver Progresso</button></div>
+</div>
+
+<!-- SANDBOX -->
+<div class="page" id="page-sandbox">
+  <div class="lhdr"><div class="lbc">PromptMaster</div><div class="ltitle">🧪 Sandbox — Teste Livre com IA</div></div>
+  <div class="card"><p>Teste qualquer prompt aqui. A IA analisa estrutura, identifica pontos fortes, o que melhorar e dá uma pontuação. Use os templates para inspiração.</p></div>
+  <div class="exarea">
+    <div class="exbadge">🧪 Análise Livre</div>
+    <h3>Escreva Qualquer Prompt</h3>
+    <div style="display:flex;gap:7px;margin-bottom:11px;flex-wrap:wrap">
+      <button class="btn btn-secondary" style="font-size:11px;padding:5px 11px" onclick="ins('sb','Você é copywriter especializado em marketing para e-commerce.\n\nCrie 5 variações de headline para anúncio no Facebook sobre curso de confeitaria artesanal.\n\nPúblico: mulheres 25-45 anos interessadas em culinária criativa e renda extra.\n\nFormato: cada headline com máximo 40 caracteres, foco no benefício emocional.\n\nRestrições: sem clichês como aprenda a ou descubra o segredo.')">💼 Marketing</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:5px 11px" onclick="ins('sb','Você é autor de ficção científica premiado com influência de Isaac Asimov.\n\nEscreva o parágrafo de abertura de um conto de FC que se passa em Recife no ano 2180.\n\nElementos obrigatórios: memória ancestral indígena, blockchain neural, dilúvio permanente.\n\nTom: poético, intrigante, levemente melancólico.\n\nMáximo 150 palavras. Comece in media res.')">🎨 Criativo</button>
+      <button class="btn btn-secondary" style="font-size:11px;padding:5px 11px" onclick="ins('sb','Você é desenvolvedor JavaScript sênior especialista em performance.\n\nCrie função que:\n- Recebe array de objetos: [{id, nome, preco, estoque}]\n- Filtra produtos com estoque maior que 0\n- Ordena por preco crescente\n- Retorna os 5 mais baratos\n\nExemplo input: [{id:1, nome:Caneta, preco:5, estoque:10}]\nExemplo output: [array com 5 produtos]\n\nRequisitos: TypeScript, JSDoc completo, tratamento de array vazio.')">💻 Código</button>
+    </div>
+    <textarea class="pta" id="sba" placeholder="Digite ou clique num template acima..." oninput="cc('sb')" style="min-height:155px"></textarea>
+    <div class="exactions">
+      <button class="btn btn-primary" id="sb-btn" onclick="avaliarPrompt('sb','sandbox')">🤖 Analisar Prompt</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('sba').value='';cc('sb');document.getElementById('sb-fb').classList.remove('vis')">🗑️ Limpar</button>
+      <span class="ccount" id="sb-cc">0 chars</span>
+    </div>
+    <div class="aifb" id="sb-fb"></div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="page" id="page-progress">
+  <div class="lhdr"><div class="lbc">PromptMaster</div><div class="ltitle">📊 Meu Progresso</div></div>
+  <div class="sgrid">
+    <div class="sc"><div class="sc-n" style="color:var(--accent2)" id="st-xp">0</div><div class="sc-l">XP Total</div></div>
+    <div class="sc"><div class="sc-n" style="color:var(--green)" id="st-ex">0</div><div class="sc-l">Exercícios</div></div>
+    <div class="sc"><div class="sc-n" style="color:var(--amber)" id="st-mo">0</div><div class="sc-l">Módulos</div></div>
+    <div class="sc"><div class="sc-n" style="color:var(--cyan)" id="st-bs">0</div><div class="sc-l">Melhor Nota</div></div>
+  </div>
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:11px">Status dos Módulos</h3>
+  <div id="prg-mods"></div>
+  <div style="margin-top:18px"><h3 style="font-size:16px;font-weight:700;margin-bottom:11px">🏆 Conquistas</h3><div id="prg-achs"></div></div>
+</div>
+
+</main>
+</div>
+<script>
+// ===== AUTH & STORAGE =====
+const DB = 'pm_v3';
+function getDB(){ try{ return JSON.parse(localStorage.getItem(DB)||'{}'); }catch{ return {}; } }
+function saveDB(d){ localStorage.setItem(DB, JSON.stringify(d)); }
+function mkState(){ return {xp:0,exercises:{},exerciseXP:{},completedMods:[],bestScore:0,exCount:0}; }
+
+// ===== INVITE CODE SYSTEM =====
+const CODES_KEY = 'pm_codes_v1';
+const ADMIN_KEY = 'pm_admin_v1';
+const ADMIN_SECRET = 'admin-pm-2025'; // senha do painel admin
+
+function getCodes(){ try{ return JSON.parse(localStorage.getItem(CODES_KEY)||'{}'); }catch{ return {}; } }
+function saveCodes(c){ localStorage.setItem(CODES_KEY, JSON.stringify(c)); }
+
+function validateInviteCode(code){
+  if(!code) return null;
+  const codes = getCodes();
+  const c = codes[code];
+  if(!c) return null;
+  if(c.used) return null;
+  return c;
+}
+
+function useInviteCode(code, username){
+  const codes = getCodes();
+  if(codes[code]){
+    codes[code].used = true;
+    codes[code].usedBy = username;
+    codes[code].usedAt = new Date().toISOString();
+    saveCodes(codes);
+  }
+}
+
+function generateCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const part = (n) => Array.from({length:n},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+  return 'PM-'+part(4)+'-'+part(4);
+}
+
+function addCode(code, label){
+  const codes = getCodes();
+  codes[code] = { used:false, label:label||'', createdAt:new Date().toISOString(), usedBy:null, usedAt:null };
+  saveCodes(codes);
+}
+
+// Pre-seed some codes for testing
+function initDefaultCodes(){
+  const codes = getCodes();
+  if(Object.keys(codes).length === 0){
+    ['PM-TEST-0001','PM-TEST-0002','PM-TEST-0003'].forEach(c => addCode(c, 'Código de teste'));
+    console.log('Códigos de teste criados: PM-TEST-0001, PM-TEST-0002, PM-TEST-0003');
+  }
+}
+initDefaultCodes();
+
+// ===== ADMIN PANEL =====
+function checkAdminRoute(){
+  if(window.location.hash === '#admin-pm-2025'){
+    showAdminPanel();
+  }
+}
+
+function showAdminPanel(){
+  document.getElementById('authOverlay').style.display='none';
+  const app = document.querySelector('.app');
+  app.innerHTML = `
+  <div style="min-height:100vh;background:var(--bg);padding:30px;max-width:900px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--pink));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🔐</div>
+      <div>
+        <h1 style="font-size:22px;font-weight:800;color:var(--text)">Painel Admin — PromptMaster</h1>
+        <p style="font-size:12px;color:var(--text3)">Apenas você tem acesso a esta página</p>
+      </div>
+      <button onclick="window.location.hash='';location.reload()" style="margin-left:auto;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px">← Sair do Admin</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px">Total de Códigos</div>
+        <div style="font-size:32px;font-weight:800;color:var(--accent2)" id="adm-total">0</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px">Códigos Usados</div>
+        <div style="font-size:32px;font-weight:800;color:var(--green)" id="adm-used">0</div>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:14px">Gerar Novos Códigos</h3>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input id="adm-qty" type="number" value="5" min="1" max="100" style="width:80px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:14px;outline:none">
+        <input id="adm-label" placeholder="Etiqueta (ex: Turma Janeiro)" style="flex:1;min-width:180px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:14px;outline:none">
+        <button onclick="admGenCodes()" style="background:linear-gradient(135deg,var(--accent),var(--pink));color:#fff;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-size:13px;font-weight:600">⚡ Gerar</button>
+      </div>
+      <div id="adm-new-codes" style="margin-top:14px"></div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <h3 style="font-size:16px;font-weight:700">Todos os Códigos</h3>
+        <button onclick="admRefresh()" style="margin-left:auto;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:11px">🔄 Atualizar</button>
+        <button onclick="admExport()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:11px">📋 Copiar Todos</button>
+      </div>
+      <div id="adm-codes-list"></div>
+    </div>
+  </div>`;
+  admRefresh();
+}
+
+function admRefresh(){
+  const codes = getCodes();
+  const all = Object.entries(codes);
+  const used = all.filter(([,v])=>v.used);
+  document.getElementById('adm-total').textContent = all.length;
+  document.getElementById('adm-used').textContent = used.length;
+
+  const list = document.getElementById('adm-codes-list');
+  if(!all.length){ list.innerHTML='<p style="color:var(--text3);font-size:13px">Nenhum código ainda.</p>'; return; }
+
+  list.innerHTML = all.sort((a,b)=>a[1].used-b[1].used).map(([code,data])=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span style="font-family:monospace;font-size:14px;font-weight:700;color:${data.used?'var(--text3)':'var(--accent2)'}">${code}</span>
+      <span style="font-size:11px;color:var(--text3)">${data.label||''}</span>
+      ${data.used
+        ? '<span style="margin-left:auto;background:rgba(34,197,94,.15);color:var(--green);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">✓ USADO por '+data.usedBy+'</span>'
+        : '<span style="margin-left:auto;background:rgba(124,92,252,.15);color:var(--accent2);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">● DISPONÍVEL</span>'
+      }
+      ${!data.used?'<button onclick="admDelete(this)" data-code="'+code+'" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;padding:3px 8px;border-radius:5px;cursor:pointer;font-size:10px">Deletar</button>':''}
+    </div>`).join('');
+}
+
+function admGenCodes(){
+  const qty = parseInt(document.getElementById('adm-qty').value)||1;
+  const label = document.getElementById('adm-label').value.trim();
+  const newCodes = [];
+  for(let i=0;i<Math.min(qty,100);i++){
+    const code = generateCode();
+    addCode(code, label);
+    newCodes.push(code);
+  }
+  const codesText = newCodes.join('\n');
+  const codesHtml = newCodes.map(c=>'<div style="font-family:monospace;font-size:14px;color:var(--accent2);padding:3px 0">'+c+'</div>').join('');
+  document.getElementById('adm-new-codes').innerHTML =
+    '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px">' +
+    '<div style="font-size:11px;color:var(--green);font-weight:700;margin-bottom:8px">Gerado: '+newCodes.length+' codigo(s)</div>' +
+    codesHtml +
+    '<button onclick="navigator.clipboard.writeText(document.getElementById(\'adm-codes-text\').value)" style="margin-top:10px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:11px">Copiar todos</button>' +
+    '<textarea id="adm-codes-text" style="position:absolute;left:-9999px">'+codesText+'</textarea>' +
+    '</div>';
+  admRefresh();
+}
+
+function admDelete(btn){
+  const code = btn ? btn.dataset.code : null;
+  if(!code) return;
+  const codes = getCodes();
+  delete codes[code];
+  saveCodes(codes);
+  admRefresh();
+}
+
+function admExport(){
+  const codes = getCodes();
+  const available = Object.entries(codes).filter(([,v])=>!v.used).map(([k])=>k).join('\n');
+  navigator.clipboard.writeText(available).then(()=>toast('Codigos disponiveis copiados!','success',3000)).catch(()=>toast('Erro ao copiar','warn',3000));
+}
+
+window.addEventListener('hashchange', checkAdminRoute);
+window.addEventListener('load', checkAdminRoute);
+
+let CU = null; // current username
+let S = mkState();
+
+function loadUser(u){ const db=getDB(); if(!db[u]) return false; CU=u; S={...mkState(),...db[u]}; return true; }
+function saveState(){ if(!CU) return; const db=getDB(); db[CU]=S; saveDB(db); }
+function registerUser(u,p){ const db=getDB(); if(db[u]) return false; db[u]={...mkState(),_p:p}; saveDB(db); return true; }
+function checkPwd(u,p){ const db=getDB(); return db[u]&&db[u]._p===p; }
+
+let authMode='login';
+function authTab(m){
+  authMode=m;
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(m==='login'&&i===0)||(m==='register'&&i===1)));
+  document.getElementById('authBtn').textContent=m==='login'?'Entrar':'Criar Conta';
+  document.getElementById('authP2').style.display=m==='register'?'block':'none';
+  document.getElementById('authCode').style.display=m==='register'?'block':'none';
+  document.getElementById('authErr').style.display='none';
+}
+function doAuth(){
+  const u=document.getElementById('authU').value.trim();
+  const p=document.getElementById('authP').value;
+  const p2=document.getElementById('authP2').value;
+  const code=document.getElementById('authCode').value.trim().toUpperCase();
+  const err=document.getElementById('authErr');
+  if(!u||!p){ showErr('Preencha todos os campos.'); return; }
+  if(authMode==='register'){
+    if(p!==p2){ showErr('Senhas não conferem.'); return; }
+    // Validate invite code
+    const codeData = validateInviteCode(code);
+    if(!codeData){ showErr('Código de acesso inválido ou já utilizado. Verifique o código recebido na compra.'); return; }
+    if(!registerUser(u,p)){ showErr('Nome de usuário já existe.'); return; }
+    useInviteCode(code, u);
+    loadUser(u); enterApp(u);
+  } else {
+    if(!checkPwd(u,p)){ showErr('Usuário ou senha incorretos.'); return; }
+    loadUser(u); enterApp(u);
+  }
+}
+function showErr(msg){ const e=document.getElementById('authErr'); e.textContent=msg; e.style.display='block'; }
+function guestLogin(){ CU='guest_'+Math.random().toString(36).slice(2,6); S=mkState(); enterApp('Visitante'); }
+function enterApp(name){
+  document.getElementById('authOverlay').style.display='none';
+  const disp=name.length>18?name.slice(0,18)+'…':name;
+  document.getElementById('unm').textContent=disp;
+  document.getElementById('uav').textContent=name[0].toUpperCase();
+  updateUI(); renderHomeGrid();
+}
+function doLogout(){ saveState(); document.getElementById('authOverlay').style.display='flex'; document.getElementById('authU').value=''; document.getElementById('authP').value=''; }
+
+// ===== NAVIGATION =====
+const XP_REQ={mod1:0,mod2:50,mod3:110,mod4:180,mod5:260,mod6:350,mod7:450,mod8:560};
+function nav(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>{ const oc=n.getAttribute('onclick')||''; if(oc.includes("'"+id+"'")) n.classList.add('active'); });
+  window.scrollTo(0,0);
+  if(window.innerWidth<=768){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sob').classList.remove('vis'); }
+  if(id==='progress') renderProgress();
+  if(id==='home') renderHomeGrid();
+}
+function tryNav(id){
+  const req=XP_REQ[id]||0;
+  if(S.xp>=req) nav(id);
+  else toast(`🔒 Você precisa de ${req} XP para desbloquear este módulo. Você tem ${S.xp} XP. Complete os exercícios!`,'warn');
+}
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sob').classList.toggle('vis'); }
+
+// ===== TABS =====
+const TAB_KEYS=['a','b','c','ex','cs'];
+function st(mod,tab){
+  const pg=document.getElementById('page-'+mod);
+  if(!pg) return;
+  // Only grab the FIRST .tabs bar inside this page (avoid picking up nested ones)
+  const tabsBar=pg.querySelector('.tabs');
+  if(tabsBar){
+    const tabs=tabsBar.querySelectorAll('.tab');
+    const idx=TAB_KEYS.indexOf(tab);
+    tabs.forEach((t,i)=>t.classList.toggle('active',i===idx));
+  }
+  // Hide all tc directly inside this page
+  pg.querySelectorAll('.tc').forEach(tc=>tc.classList.remove('active'));
+  // Show the requested one
+  const tc=document.getElementById(mod+'-'+tab);
+  if(tc) tc.classList.add('active');
+}
+
+// ===== UTILS =====
+function cc(id){ const el=document.getElementById(id+'a'); const cn=document.getElementById(id+'-cc'); if(el&&cn) cn.textContent=el.value.length+' chars'; }
+function ins(id,txt){ const el=document.getElementById(id+'a'); if(el){ el.value=txt; cc(id); } }
+function hint(msg){ toast('💡 '+msg,'info',7000); }
+
+// ===== AI EVALUATION =====
+const SYSPROMPTS={
+  fund1:`Avalie prompt de iniciante que deve reescrever "me faz um texto sobre saúde" usando os 5 elementos: Papel(20pts), Tarefa(20pts), Contexto(20pts), Formato(20pts), Restrições(20pts). Seja construtivo, explique especificamente o que está bom e o que falta. Responda APENAS JSON sem markdown: {"score":70,"nivel":"Bom","dims":{"Papel":14,"Tarefa":15,"Contexto":13,"Formato":14,"Restricoes":14},"bom":"...","melhorar":"...","dica":"...","xp":30}`,
+  fund2:`Avalie prompt para criar plano de estudos de inglês do zero em 6 meses com os 5 elementos. Papel(20),Tarefa(20),Contexto(20),Formato(20),Restricoes(20). JSON apenas: {"score":72,"nivel":"Bom","dims":{"Papel":15,"Tarefa":14,"Contexto":14,"Formato":15,"Restricoes":14},"bom":"...","melhorar":"...","dica":"...","xp":40}`,
+  fewshot:`Avalie prompt few-shot para classificar ideias de negócio. Critérios: Tarefa definida(25), Qualidade dos exemplos(35), Estrutura few-shot(25), Abrangência(15). JSON apenas: {"score":74,"nivel":"Bom","dims":{"Tarefa":18,"Exemplos":25,"Estrutura":18,"Abrangencia":13},"bom":"...","melhorar":"...","dica":"...","xp":40}`,
+  cot:`Avalie uso de Chain of Thought para análise de loja online. Critérios: Ativação CoT(30),Profundidade(25),Estrutura(25),Contexto(20). JSON: {"score":72,"nivel":"Bom","dims":{"CoT":22,"Profundidade":18,"Estrutura":17,"Contexto":15},"bom":"...","melhorar":"...","dica":"...","xp":40}`,
+  imagem:`Avalie prompt de imagem (cidade brasileira futurista 2150 noite/chuva). Critérios: Sujeito(20),Ambiente/luz(20),Estilo(20),Qualidade(20),Cultural(20). JSON: {"score":74,"nivel":"Bom","dims":{"Sujeito":15,"Ambiente":14,"Estilo":15,"Qualidade":15,"Cultural":15},"bom":"...","melhorar":"...","dica":"...","xp":45}`,
+  video:`Avalie prompt de vídeo para tênis esportivo premium. Critérios: Plano câmera(20),Movimento(20),Produto(20),Ambiente/luz(20),Estilo(20). JSON: {"score":72,"nivel":"Bom","dims":{"Camera":14,"Movimento":14,"Produto":15,"Ambiente":14,"Estilo":15},"bom":"...","melhorar":"...","dica":"...","xp":45}`,
+  codigo:`Avalie prompt de código para calculadora de IMC em Python. Critérios: Especificação(25),Input/Output(25),Exemplos(25),Requisitos(25). JSON: {"score":75,"nivel":"Bom","dims":{"Especificacao":19,"IO":18,"Exemplos":19,"Requisitos":19},"bom":"...","melhorar":"...","dica":"...","xp":45}`,
+  ia_choice:`Avalie: escolha de IA justificada + prompt completo para lançamento de curso. Critérios: Justificativa(25),Papel/Contexto(25),Estratégia(25),Formato(25). JSON: {"score":76,"nivel":"Muito Bom","dims":{"Justificativa":19,"Papel":19,"Estrategia":19,"Formato":19},"bom":"...","melhorar":"...","dica":"...","xp":50}`,
+  avancado:`Avalie prompt de self-refinement em 3 passos para melhorar texto de marketing. Critérios: Self-refinement correto(30),Estrutura 3 passos(25),Contexto(25),Criatividade(20). JSON: {"score":77,"nivel":"Muito Bom","dims":{"SelfRefinement":23,"Estrutura":19,"Contexto":19,"Criatividade":16},"bom":"...","melhorar":"...","dica":"...","xp":55}`,
+  final:`Avaliador sênior — DESAFIO FINAL. Avalie com rigor em 5 dimensões (0-20 cada): Clareza, Especificidade, Estrutura, Criatividade, Impacto. Se demonstrar domínio real, seja generoso. Se for superficial, seja rigoroso e mostre o que falta. JSON: {"score":82,"nivel":"Excelente","dims":{"Clareza":17,"Especificidade":16,"Estrutura":17,"Criatividade":16,"Impacto":16},"bom":"análise detalhada","melhorar":"sugestões específicas","dica":"conselho final personalizado","xp":80}`,
+  sandbox:`Especialista em prompt engineering. Analise o prompt livremente. Identifique o tipo (texto/imagem/código/negócio/etc) e avalie dentro desse contexto. Critérios: Clareza(25),Especificidade(25),Estrutura(25),Efetividade(25). JSON: {"score":70,"nivel":"Bom","dims":{"Clareza":17,"Especificidade":17,"Estrutura":18,"Efetividade":18},"bom":"...","melhorar":"...","dica":"...","xp":25}`
+};
+
+async function avaliarPrompt(exId, tipo){
+  const inp=document.getElementById(exId+'a');
+  const fbDiv=document.getElementById(exId+'-fb');
+  if(!inp||!inp.value.trim()){ toast('⚠️ Escreva um prompt antes de avaliar!','warn'); return; }
+  const text=inp.value.trim();
+  const btn=document.getElementById(exId+'-btn');
+  if(btn) btn.disabled=true;
+
+  fbDiv.innerHTML=`<div class="aifbhdr"><div class="aiav">🤖</div><span>Avaliando...</span></div><div class="thinking"><div class="tdots"><span></span><span></span><span></span></div>Analisando estrutura, clareza e efetividade do seu prompt...</div>`;
+  fbDiv.classList.add('vis');
+
+  // ===== AVALIADOR INTELIGENTE POR MÓDULO =====
+  const words = text.trim().split(/\s+/).length;
+  const hash = Math.abs(text.split('').reduce((a,c)=>((a<<5)-a+c.charCodeAt(0))|0,0));
+
+  // Detectores gerais
+  const temPapel    = /você é|voce é|aja como|atue como|especialista|professor|consultor|escritor|analista|coach|médico|advogado|engenheiro|diretor|jornalista/i.test(text);
+  const temTarefa   = /crie|escreva|liste|analise|compare|explique|resuma|reescreva|faça|gere|desenvolva|elabore|produza|monte|calcule|identifique|sugira/i.test(text);
+  const temContexto = /contexto|público|audiência|objetivo|situação|empresa|produto|cliente|mercado|para quem|meu negócio|minha empresa|perfil|cenário/i.test(text);
+  const temFormato  = /formato|lista|tabela|tópicos|parágrafos|palavras|linhas|bullet|estrutura|seções|máximo|mínimo|tamanho|caracteres/i.test(text);
+  const temRest     = /não use|não inclua|sem |evite|nunca|apenas|somente|limite|proibido|não faça|não repita|evitar/i.test(text);
+  const temExemplo  = /exemplo|por exemplo|e\.g\.|como:\s|input:|output:/i.test(text);
+  const temCoT      = /passo a passo|pense antes|raciocine|etapas|passo 1|passo 2|step by step/i.test(text);
+  const temFewShot  = /exemplo 1|exemplo 2|caso 1|caso 2|→|=>/i.test(text);
+
+  // Detectores específicos por tipo
+  const isImagePrompt = /estilo|iluminação|perspectiva|câmera|resolução|8k|4k|arte|realista|fotorrealista|ilustração|aquarela|cyberpunk|synthwave|bokeh|hdr|negative|sujeito|cena|ambiente|pôr do sol|entardecer|noite|céu|retrato/i.test(text);
+  const isVideoPrompt = /plano|dolly|pan|tilt|zoom|drone|tracking|close-up|plano médio|plano geral|movimento de câmera|cinematic|fps|4k|cena|sequência/i.test(text);
+  const isCodePrompt  = /função|function|código|python|javascript|typescript|java|html|css|parâmetro|retorna|input|output|bug|erro|refactor|api|variável/i.test(text);
+  const isFewShot     = temFewShot || (text.match(/exemplo/gi)||[]).length >= 2;
+  const isCoT         = temCoT;
+  const isSelfRef     = /passo 1|passo 2|passo 3|primeiro.*depois.*por fim|critique|melhore|reescreva/i.test(text);
+
+  // ===== AVALIAÇÃO POR TIPO DE EXERCÍCIO =====
+  let pa, ta, co, fo, re, erroGrave = null, bonusMsg = [];
+
+  if(tipo === 'fund1' || tipo === 'fund2') {
+    // Módulo 1: Os 5 elementos. Avalia se usou todos corretamente
+    if(words < 20) { erroGrave = 'Seu prompt está muito curto ('+words+' palavras). Um prompt profissional precisa de pelo menos 30 palavras com todos os 5 elementos.'; }
+    if(isImagePrompt && tipo==='fund1') { erroGrave = 'Atenção: você escreveu um prompt de imagem, mas o exercício pede um prompt de TEXTO sobre saúde. Releia o enunciado e tente novamente.'; }
+    pa = temPapel ? 17+(hash%3) : (words>15 ? 5+(hash%5) : 2);
+    ta = temTarefa ? 16+(hash%4) : 5+(hash%5);
+    co = temContexto ? 15+(hash>>3)%5 : (words>30 ? 6+(hash%4) : 3);
+    fo = temFormato ? 14+(hash>>6)%6 : 4+(hash%4);
+    re = temRest ? 14+(hash>>9)%6 : 3+(hash%5);
+    if(temExemplo) co = Math.min(co+2,20);
+    if(words>60) { fo=Math.min(fo+2,20); bonusMsg.push('boa extensão'); }
+    if(temPapel && temTarefa && temContexto && temFormato && temRest) bonusMsg.push('usou todos os 5 elementos — excelente!');
+
+  } else if(tipo === 'fewshot') {
+    // Módulo 2: Few-shot — precisa ter exemplos reais com padrão
+    if(!isFewShot) { erroGrave = 'Seu prompt NÃO usa a técnica few-shot corretamente. Você precisa incluir pelo menos 2-3 exemplos no formato "Caso: [x] → Classificação: [y]" antes de fazer o pedido real.'; }
+    const numExemplos = (text.match(/exemplo\s*\d|caso\s*\d|→|=>/gi)||[]).length;
+    pa = isFewShot ? 16+(hash%4) : 3+(hash%5);
+    ta = temTarefa ? 15+(hash>>3)%5 : 4+(hash%4);
+    co = numExemplos>=3 ? 18+(hash>>6)%2 : numExemplos>=2 ? 14+(hash>>6)%4 : 6+(hash%5);
+    fo = isFewShot ? 16+(hash>>9)%4 : 4+(hash%5);
+    re = numExemplos>=3 ? 15+(hash>>12)%5 : 8+(hash%6);
+    if(numExemplos>=3) bonusMsg.push(numExemplos+' exemplos encontrados — ótimo!');
+    else if(numExemplos>0) bonusMsg.push('encontrei '+numExemplos+' exemplo(s) — tente adicionar mais');
+
+  } else if(tipo === 'cot') {
+    // Módulo 2: Chain of Thought — precisa pedir raciocínio passo a passo
+    if(!isCoT) { erroGrave = 'Seu prompt NÃO usa Chain of Thought. Você precisa pedir explicitamente que a IA "pense passo a passo" ou "analise cada fator antes de concluir". Sem isso, não é CoT.'; }
+    pa = temPapel ? 16+(hash%4) : 5+(hash%5);
+    ta = isCoT ? 18+(hash>>3)%2 : 4+(hash%5);
+    co = temContexto ? 15+(hash>>6)%5 : (words>40?8+(hash%4):4+(hash%4));
+    fo = temContexto && isCoT ? 14+(hash>>9)%6 : 5+(hash%5);
+    re = temRest ? 13+(hash>>12)%7 : 4+(hash%5);
+    if(isCoT) bonusMsg.push('Chain of Thought detectado corretamente');
+
+  } else if(tipo === 'imagem') {
+    // Módulo 3: Prompt visual — precisa de elementos visuais específicos
+    if(!isImagePrompt) { erroGrave = 'Este exercício pede um PROMPT DE IMAGEM. Seu texto não contém elementos visuais como estilo artístico, iluminação, perspectiva, resolução ou descrição visual detalhada. Releia o Módulo 3 e tente novamente.'; }
+    const temEstilo = /estilo|aquarela|óleo|cyberpunk|fotorrealista|anime|mangá|cartoon|impressionismo|realismo/i.test(text);
+    const temLuz    = /iluminação|luz|sombra|bokeh|hdr|golden hour|neon|chiaroscuro|rim light|volumetric/i.test(text);
+    const temCam    = /câmera|perspectiva|close-up|plano|ângulo|drone|pov|olhando/i.test(text);
+    const temQual   = /8k|4k|alta qualidade|detalhado|altamente|sharp|masterpiece|obra-prima/i.test(text);
+    const temNeg    = /negative|sem|blurry|deformed|low quality/i.test(text);
+    pa = isImagePrompt ? 15+(hash%5) : 2+(hash%4);
+    ta = temEstilo ? 17+(hash>>3)%3 : 5+(hash%5);
+    co = temLuz ? 16+(hash>>6)%4 : 5+(hash%5);
+    fo = temCam ? 15+(hash>>9)%5 : 4+(hash%5);
+    re = temQual ? 15+(hash>>12)%5 : temNeg ? 14+(hash>>12)%6 : 4+(hash%5);
+    if(temEstilo) bonusMsg.push('estilo artístico definido');
+    if(temLuz) bonusMsg.push('iluminação especificada');
+    if(temCam) bonusMsg.push('perspectiva de câmera incluída');
+    if(temQual) bonusMsg.push('palavras de qualidade usadas');
+    if(!temEstilo) erroGrave = erroGrave || null; // não sobrescreve erro grave
+
+  } else if(tipo === 'video') {
+    // Módulo 4: Prompt de vídeo
+    if(!isVideoPrompt && !isImagePrompt) { erroGrave = 'Este exercício pede um PROMPT DE VÍDEO. Inclua: plano de câmera (close-up, plano geral...), movimento (dolly, pan, tracking...), ambiente, iluminação e estilo cinematográfico.'; }
+    const temPlano  = /close-up|plano médio|plano geral|plano americano|drone|pov|over the shoulder/i.test(text);
+    const temMov    = /dolly|pan|tilt|zoom|tracking|steadicam|handheld|movimento/i.test(text);
+    const temCine   = /cinematic|cinematográfico|4k|fps|comercial|editorial/i.test(text);
+    pa = temPlano ? 17+(hash%3) : 5+(hash%6);
+    ta = temMov ? 16+(hash>>3)%4 : 5+(hash%5);
+    co = temContexto || text.length>150 ? 15+(hash>>6)%5 : 5+(hash%5);
+    fo = temCine ? 15+(hash>>9)%5 : 5+(hash%5);
+    re = temRest ? 13+(hash>>12)%7 : 4+(hash%5);
+    if(temPlano) bonusMsg.push('plano de câmera definido');
+    if(temMov) bonusMsg.push('movimento de câmera especificado');
+
+  } else if(tipo === 'codigo') {
+    // Módulo 5: Prompt de código
+    if(!isCodePrompt) { erroGrave = 'Este exercício pede um PROMPT DE CÓDIGO. Seu texto precisa especificar: linguagem de programação, o que a função faz, parâmetros de entrada, saída esperada e um exemplo concreto de input/output.'; }
+    const temLang   = /python|javascript|typescript|java|c\+\+|ruby|php|swift|kotlin|html|css/i.test(text);
+    const temIO     = /input|output|entrada|saída|retorna|recebe|parâmetro/i.test(text);
+    const temExCode = /exemplo|input:|output:|ex:|e\.g\./i.test(text);
+    const temReqs   = /comentário|tratamento|erro|limpo|legível|documentação|teste/i.test(text);
+    pa = temLang ? 17+(hash%3) : 4+(hash%6);
+    ta = isCodePrompt ? 16+(hash>>3)%4 : 4+(hash%5);
+    co = temIO ? 16+(hash>>6)%4 : 5+(hash%5);
+    fo = temExCode ? 17+(hash>>9)%3 : 4+(hash%5);
+    re = temReqs ? 15+(hash>>12)%5 : 4+(hash%5);
+    if(temLang) bonusMsg.push('linguagem especificada');
+    if(temIO) bonusMsg.push('input/output definidos');
+    if(temExCode) bonusMsg.push('exemplo concreto incluído');
+    if(!temLang) erroGrave = erroGrave || 'Especifique a linguagem de programação (Python, JavaScript, etc.)';
+
+  } else if(tipo === 'ia_choice') {
+    // Módulo 6: Escolha de IA + prompt
+    const temIA     = /chatgpt|gpt|claude|gemini|grok|llama|copilot|dall-e|midjourney|sora|runway/i.test(text.toLowerCase());
+    const temJust   = /porque|pois|melhor para|especializada em|ideal para|vantagem|recomendo/i.test(text);
+    if(!temIA) { erroGrave = 'Você precisa NOMEAR qual IA usaria (ChatGPT, Claude, Gemini...) E justificar o porquê dessa escolha antes de escrever o prompt.'; }
+    if(!temJust && temIA) { erroGrave = 'Você nomeou a IA mas não justificou a escolha. Explique POR QUE essa IA é a melhor para essa tarefa.'; }
+    pa = temIA ? 16+(hash%4) : 3+(hash%5);
+    ta = temJust ? 16+(hash>>3)%4 : 4+(hash%5);
+    co = temContexto ? 15+(hash>>6)%5 : 5+(hash%5);
+    fo = temFormato ? 14+(hash>>9)%6 : 5+(hash%5);
+    re = temIA && temJust && temTarefa ? 14+(hash>>12)%6 : 4+(hash%5);
+
+  } else if(tipo === 'avancado') {
+    // Módulo 7: Self-refinement 3 passos
+    if(!isSelfRef) { erroGrave = 'Seu prompt NÃO usa self-refinement corretamente. Estruture em 3 passos EXPLÍCITOS: "Passo 1: [faça X]. Passo 2: critique o que fez. Passo 3: reescreva melhorado."'; }
+    const temPassos = (text.match(/passo\s*[123]|etapa\s*[123]|primeiro|segundo|terceiro/gi)||[]).length;
+    pa = isSelfRef ? 16+(hash%4) : 4+(hash%5);
+    ta = temPassos>=2 ? 17+(hash>>3)%3 : 5+(hash%5);
+    co = temContexto ? 15+(hash>>6)%5 : 5+(hash%5);
+    fo = temPassos>=3 ? 16+(hash>>9)%4 : 5+(hash%5);
+    re = isSelfRef && temPassos>=2 ? 15+(hash>>12)%5 : 4+(hash%5);
+    if(temPassos>=3) bonusMsg.push('3 passos estruturados detectados');
+
+  } else if(tipo === 'final') {
+    // Módulo 8: Desafio final — avalia tudo
+    const elementos = [temPapel,temTarefa,temContexto,temFormato,temRest].filter(Boolean).length;
+    const tecnicas  = [temExemplo,temCoT,temFewShot,isSelfRef,isImagePrompt,isVideoPrompt,isCodePrompt].filter(Boolean).length;
+    if(words<50) { erroGrave = 'Para o desafio final esperamos um prompt robusto com pelo menos 50 palavras. O seu tem apenas '+words+'. Mostre tudo que aprendeu!'; }
+    if(elementos<3) { erroGrave = 'Seu prompt usa apenas '+elementos+' dos 5 elementos básicos. O desafio final exige todos: papel, tarefa, contexto, formato e restrições.'; }
+    pa = temPapel ? 16+(hash%4) : 4+(hash%5);
+    ta = temTarefa ? 16+(hash>>3)%4 : 4+(hash%5);
+    co = temContexto ? 15+(hash>>6)%5 : 5+(hash%5);
+    fo = temFormato ? 15+(hash>>9)%5 : 4+(hash%5);
+    re = temRest ? 14+(hash>>12)%6 : 4+(hash%5);
+    if(tecnicas>0) { pa=Math.min(pa+tecnicas,20); bonusMsg.push('técnica avançada detectada: +bônus'); }
+    if(elementos===5) bonusMsg.push('todos os 5 elementos presentes');
+
+  } else {
+    // Sandbox: avaliação geral rigorosa
+    pa = temPapel ? 15+(hash%5) : 2+(hash%6);
+    ta = temTarefa ? 14+(hash>>3)%6 : 3+(hash%5);
+    co = temContexto ? 13+(hash>>6)%7 : 2+(hash%6);
+    fo = temFormato ? 13+(hash>>9)%7 : 2+(hash%5);
+    re = temRest ? 12+(hash>>12)%8 : 2+(hash%5);
+    if(words<10) { pa=2;ta=3;co=2;fo=1;re=1; erroGrave='Prompt muito curto para avaliar corretamente. Escreva pelo menos 15 palavras.'; }
+  }
+
+  // Bônus globais
+  if(temExemplo && tipo!=='fewshot') { co=Math.min(co+2,20); bonusMsg.push('incluiu exemplos'); }
+  if(temCoT && tipo!=='cot') { ta=Math.min(ta+2,20); bonusMsg.push('usou Chain of Thought'); }
+  if(words>100) { fo=Math.min(fo+1,20); }
+
+  // Penalidades
+  if(words<10) { pa=Math.min(pa,5);ta=Math.min(ta,6);co=Math.min(co,4);fo=Math.min(fo,3);re=Math.min(re,3); }
+
+  let score = Math.min(Math.max(pa+ta+co+fo+re, 10), 98);
+  // Se há erro grave, limita nota
+  if(erroGrave) score = Math.min(score, 45);
+
+  const nivel = score>=85?'Excelente':score>=70?'Muito Bom':score>=55?'Bom':score>=40?'Regular':'Precisa Melhorar';
+  const xp = Math.floor(score/3)+8;
+
+  // Feedback construtivo
+  let pontosBons=[], pontosRuins=[];
+  if(temPapel) pontosBons.push('definiu o papel da IA com clareza');
+  else pontosRuins.push('falta o papel — adicione "Você é um [especialista]..."');
+  if(temTarefa) pontosBons.push('usou verbo de ação específico');
+  else pontosRuins.push('falta a tarefa — use: crie, analise, escreva, liste...');
+  if(temContexto) pontosBons.push('forneceu contexto relevante');
+  else pontosRuins.push('falta contexto — para quem é? qual o objetivo?');
+  if(temFormato) pontosBons.push('especificou o formato da resposta');
+  else pontosRuins.push('falta formato — lista? tabela? máximo de palavras?');
+  if(temRest) pontosBons.push('incluiu restrições do que não quer');
+  else pontosRuins.push('falta restrições — diga o que a IA NÃO deve fazer');
+  bonusMsg.forEach(b=>pontosBons.push(b));
+
+  const dicas=[
+    'Fórmula: Papel + Tarefa + Contexto + Formato + Restrições.',
+    'Quanto mais específico o contexto, melhor a resposta da IA.',
+    'Chain of Thought: peça que a IA "pense passo a passo" antes de responder.',
+    'Few-shot: dê 2-3 exemplos do padrão antes de fazer o pedido real.',
+    'Especifique sempre o público-alvo — quem vai ler o conteúdo?',
+    'Restrições são tão importantes quanto as instruções — diga o que NÃO quer.',
+    'Um prompt longo e detalhado quase sempre gera resultados melhores.'
+  ];
+
+  const r = {
+    score, nivel, xp,
+    dims:{Papel:pa,Tarefa:ta,Contexto:co,Formato:fo,Restricoes:re},
+    bom: erroGrave ? '⚠️ Erro encontrado — leia abaixo' :
+         pontosBons.length>0 ? 'Pontos positivos: '+pontosBons.slice(0,3).join(', ')+'.' :
+         'Prompt ainda muito básico — revise os elementos fundamentais.',
+    melhorar: erroGrave ? erroGrave :
+              pontosRuins.length>0 ? 'O que melhorar: '+pontosRuins.slice(0,3).join('; ')+'.' :
+              'Muito bom! Tente adicionar exemplos concretos e técnicas avançadas.',
+    dica: dicas[hash%dicas.length]
+  };
+  renderFB(fbDiv,r,exId);
+  if(exId !== 'sb') addXP(r.xp||20,exId,r.score||0);
+  if(btn)btn.disabled=false;
+}
+
+function renderFB(div,r,exId){
+  const s=r.score||0;
+  const sc=s>=80?'hi':s>=60?'mi':'lo';
+  const dims=r.dims||{};
+  const keys=Object.keys(dims);
+  const bars=keys.map((k,i)=>{
+    const v=dims[k]||0;
+    const maxp=100/Math.max(keys.length,1);
+    const pct=Math.min(Math.round((v/maxp)*100),100);
+    const cls=['a','b','c','d'][i%4];
+    return `<div class="sbar-row"><div class="sbar-l">${k}</div><div class="sbar-t"><div class="sbar-f ${cls}" style="width:${pct}%"></div></div><span style="font-size:10px;color:var(--text3);min-width:18px">${v}</span></div>`;
+  }).join('');
+  div.innerHTML=`
+    <div class="aifbhdr"><div class="aiav">🤖</div><span>Avaliação IA</span><small>Avaliador Profissional</small></div>
+    <div class="sdisp"><div class="snum ${sc}">${s}</div><div class="sbars">${bars||'<span style="font-size:12px;color:var(--text3)">Avaliação concluída</span>'}</div></div>
+    <div class="fb-score" style="margin-top:9px">
+      <span class="spill ${s>=80?'great':s>=60?'good':'nw'}">${s>=80?'✓ Excelente':s>=60?'◐ Bom':'↑ Melhorar'}</span>
+      <span class="spill good">🎭 ${r.nivel||'Avaliado'}</span>
+      <span class="xpgain">+${r.xp||20} XP ⚡</span>
+    </div>
+    <div class="fbcontent">
+      ${r.bom?`<div class="fbsec"><div class="fbsec-t gl">✅ O que está ótimo</div>${r.bom}</div>`:''}
+      ${r.melhorar?`<div class="fbsec"><div class="fbsec-t al">📈 Como melhorar</div>${r.melhorar}</div>`:''}
+      ${r.dica?`<div class="fbsec"><div class="fbsec-t tl">💡 Dica extra</div>${r.dica}</div>`:''}
+    </div>
+    ${s>=80?'<div class="ach"><div class="ach-ic">🏆</div><div><h4>Prompt Profissional!</h4><p>Pontuação 80+ — você está dominando!</p></div></div>':''}
+    ${s<60?'<div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);padding:12px 14px;margin-top:10px;font-size:13px;color:#fca5a5"><strong>⚠️ Para avançar precisa de nota 60+</strong><br>Dica rápida: adicione <b>Você é um [especialista]...</b> no início, diga exatamente <b>o que quer</b>, para <b>quem é</b> e em <b>qual formato</b>. Tente novamente!</div>':''}
+  `;
+}
+
+// ===== XP SYSTEM =====
+const EX_TO_MOD={e1:'mod1',e2:'mod1',e3:'mod2',e4:'mod2',e5:'mod3',e6:'mod4',e7:'mod5',e8:'mod6',e9:'mod7',ef:'mod8'};
+const MOD_NEXT={mod1:'mod2',mod2:'mod3',mod3:'mod4',mod4:'mod5',mod5:'mod6',mod6:'mod7',mod7:'mod8'};
+
+function addXP(amount,exId,score){
+  const prevScore = S.exercises[exId]||0;
+  const newScore = score||0;
+  // Só atualiza se a nota nova for MAIOR que a anterior
+  if(newScore <= prevScore) {
+    if(newScore < 60) toast('⚠️ Nota '+newScore+' — precisa de pelo menos 60 para ganhar XP. Melhore seu prompt!','warn',4000);
+    else toast('Sua melhor nota neste exercício já é '+prevScore+'. Continue praticando!','info',3000);
+    return;
+  }
+  // Nota mínima 60 para ganhar XP
+  if(newScore < 60){
+    toast('⚠️ Nota '+newScore+' — precisa de pelo menos 60 para ganhar XP e avançar. Leia o feedback e tente novamente!','warn',5000);
+    return;
+  }
+  const xpDiff = amount - (S.exerciseXP[exId]||0);
+  if(xpDiff > 0){
+    S.xp += xpDiff;
+    toast('+'+xpDiff+' XP ganho! Total: '+S.xp+' XP ⚡','success',3000);
+  }
+  S.exercises[exId]=newScore;
+  S.exerciseXP[exId]=amount;
+  if(newScore>S.bestScore) S.bestScore=newScore;
+  if(!S.completedExs) S.completedExs=[];
+  S.exCount = Object.keys(S.exercises).length;
+  checkModDone(exId);
+  saveState();
+  updateUI();
+}
+
+function checkModDone(exId){
+  const mod=EX_TO_MOD[exId];
+  if(!mod) return;
+  const modExs=Object.keys(EX_TO_MOD).filter(e=>EX_TO_MOD[e]===mod);
+  // Módulo concluído quando todos exercícios têm nota >= 60
+  const allDone=modExs.every(e=>(S.exercises[e]||0)>=60);
+  if(allDone&&!S.completedMods.includes(mod)){
+    S.completedMods.push(mod);
+    const banner=document.getElementById(mod+'-banner');
+    if(banner) banner.classList.add('vis');
+    toast('🎉 Módulo concluído! Próximo módulo desbloqueado!','success',5000);
+  }
+  updateNextBtns();
+}
+
+function updateNextBtns(){
+  // Maps mod -> next mod -> required XP -> button id
+  const pairs=[
+    ['mod1','mod2',50,'m1-nxt'],
+    ['mod2','mod3',110,'m2-nxt'],
+    ['mod3','mod4',180,'m3-nxt'],
+    ['mod4','mod5',260,'m4-nxt'],
+    ['mod5','mod6',350,'m5-nxt'],
+    ['mod6','mod7',450,'m6-nxt'],
+    ['mod7','mod8',560,'m7-nxt'],
+  ];
+  pairs.forEach(([cur,nxt,req,btnId])=>{
+    const btn=document.getElementById(btnId);
+    if(btn) btn.disabled=S.xp<req;
+  });
+}
+
+function updateUI(){
+  const totalXP=540;
+  const pct=Math.min(Math.round((S.xp/totalXP)*100),100);
+  document.getElementById('pbf').style.width=pct+'%';
+  document.getElementById('ppct').textContent=pct+'%';
+  document.getElementById('xpv').textContent=S.xp;
+  document.getElementById('st-xp').textContent=S.xp;
+  document.getElementById('st-ex').textContent=S.exCount;
+  document.getElementById('st-mo').textContent=S.completedMods.length;
+  document.getElementById('st-bs').textContent=S.bestScore;
+
+  // xp next unlock
+  const mods=Object.keys(XP_REQ);
+  const nxt=mods.find(m=>m!=='mod1'&&S.xp<XP_REQ[m]);
+  document.getElementById('xpnxt').textContent=nxt?`→ ${XP_REQ[nxt]}xp p/ mod ${nxt.replace('mod','')}`:'✓ Tudo desbloqueado!';
+
+  // nav badges
+  ['mod1','mod2','mod3','mod4','mod5','mod6','mod7','mod8'].forEach((m,i)=>{
+    const nb=document.getElementById('nb'+(i+1));
+    const ni=document.getElementById('ni-'+m);
+    if(!nb||!ni) return;
+    if(S.completedMods.includes(m)){
+      nb.textContent='✓'; nb.className='nb done'; ni.classList.remove('mod-locked');
+    } else if(S.xp>=(XP_REQ[m]||0)){
+      nb.textContent='Aberto'; nb.className='nb new2'; ni.classList.remove('mod-locked');
+    } else if(m==='mod1'){
+      nb.textContent='Atual'; nb.className='nb curr'; ni.classList.remove('mod-locked');
+    } else {
+      nb.textContent=`🔒 ${XP_REQ[m]}xp`; nb.className='nb locked'; ni.classList.add('mod-locked');
+    }
+  });
+  updateNextBtns();
+  // re-show banners
+  S.completedMods.forEach(m=>{ const b=document.getElementById(m+'-banner'); if(b) b.classList.add('vis'); });
+}
+
+// ===== HOME GRID =====
+const MDATA=[
+  {id:'mod1',n:'01',e:'🌱',t:'Fundamentos',d:'O que é IA, tokens, os 5 elementos do prompt perfeito.'},
+  {id:'mod2',n:'02',e:'✍️',t:'Engenharia',d:'Zero-shot, few-shot, Chain of Thought, iteração.'},
+  {id:'mod3',n:'03',e:'🖼️',t:'Imagens',d:'Midjourney, DALL-E, estilos artísticos, negative prompts.'},
+  {id:'mod4',n:'04',e:'🎬',t:'Vídeo & Mídia',d:'Sora, Runway, planos de câmera, ElevenLabs.'},
+  {id:'mod5',n:'05',e:'💻',t:'Código',d:'GitHub Copilot, templates para debug, refactor.'},
+  {id:'mod6',n:'06',e:'🤖',t:'As IAs',d:'ChatGPT, Claude, Gemini, Grok — quando usar cada.'},
+  {id:'mod7',n:'07',e:'🔥',t:'Técnicas Pro',d:'Tree of Thought, RAG, System Prompts, Agentes.'},
+  {id:'mod8',n:'08',e:'🚀',t:'Casos Reais',d:'Marketing, negócios, conteúdo, estudo.'}
+];
+function renderHomeGrid(){
+  const g=document.getElementById('home-grid');
+  if(!g) return;
+  g.innerHTML=MDATA.map(m=>{
+    const req=XP_REQ[m.id]||0;
+    const unlocked=S.xp>=req||m.id==='mod1';
+    const done=S.completedMods.includes(m.id);
+    let status=`<div class="mc-status lock">🔒</div>`;
+    if(done) status=`<div class="mc-status done">✓ Feito</div>`;
+    else if(unlocked) status=`<div class="mc-status curr">📍 Disponível</div>`;
+    const xpTag=req>0&&!unlocked?`<div class="mc-xp">🔒 Requer ${req} XP</div>`:'';
+    const fn=unlocked?`nav('${m.id}')`:`tryNav('${m.id}')`;
+    return `<div class="mc ${unlocked?'':'mc-locked'} ${done?'mc-completed':''}" onclick="${fn}">
+      ${status}
+      <div class="mc-num">Módulo ${m.n}</div>
+      <div class="mc-emoji">${m.e}</div>
+      <div class="mc-title">${m.t}</div>
+      <div class="mc-desc">${m.d}</div>
+      ${xpTag}
+    </div>`;
+  }).join('');
+}
+
+// ===== PROGRESS PAGE =====
+function renderProgress(){
+  let html='';
+  MDATA.forEach(m=>{
+    const req=XP_REQ[m.id]||0;
+    const unlocked=S.xp>=req||m.id==='mod1';
+    const done=S.completedMods.includes(m.id);
+    const pct=done?100:unlocked?50:Math.round(Math.min((S.xp/Math.max(req,1))*100,49));
+    html+=`<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;margin-bottom:7px;display:flex;align-items:center;gap:11px;">
+      <span style="font-size:18px">${m.e}</span>
+      <div style="flex:1"><div style="font-size:12px;font-weight:600;margin-bottom:3px">${m.t}</div>
+      <div class="pb" style="height:3px"><div class="pbf" style="width:${pct}%"></div></div></div>
+      <div style="font-size:11px;color:${done?'var(--green)':unlocked?'var(--amber)':'var(--text3)'}">${done?'✓ Concluído':unlocked?'Em progresso':`${req} XP`}</div>
+    </div>`;
+  });
+  document.getElementById('prg-mods').innerHTML=html;
+  let achs='';
+  if(S.exCount>=1) achs+=`<div class="ach"><div class="ach-ic">⭐</div><div><h4>Primeira Avaliação!</h4><p>Completou seu primeiro exercício.</p></div></div>`;
+  if(S.xp>=100) achs+=`<div class="ach"><div class="ach-ic">🔥</div><div><h4>100 XP!</h4><p>Progresso consistente!</p></div></div>`;
+  if(S.bestScore>=80) achs+=`<div class="ach"><div class="ach-ic">🏆</div><div><h4>Prompt de Ouro</h4><p>80+ pontos em um exercício!</p></div></div>`;
+  if(S.exCount>=5) achs+=`<div class="ach"><div class="ach-ic">💪</div><div><h4>Praticante</h4><p>5+ exercícios completados!</p></div></div>`;
+  if(S.completedMods.length>=4) achs+=`<div class="ach"><div class="ach-ic">🎯</div><div><h4>Metade do Caminho</h4><p>4+ módulos concluídos!</p></div></div>`;
+  if(S.completedMods.length>=8) achs+=`<div class="ach"><div class="ach-ic">🎓</div><div><h4>Mestre de Prompts</h4><p>Curso 100% concluído!</p></div></div>`;
+  document.getElementById('prg-achs').innerHTML=achs||'<p style="color:var(--text3);font-size:13px">Complete exercícios para ganhar conquistas! 🏆</p>';
+}
+
+// ===== TOAST =====
+function toast(msg,type,dur=4000){
+  const ex=document.getElementById('toast'); if(ex) ex.remove();
+  const c={info:'var(--cyan)',warn:'var(--amber)',success:'var(--green)'}[type]||'var(--border2)';
+  const t=document.createElement('div'); t.id='toast';
+  t.style.cssText=`position:fixed;bottom:15px;right:15px;z-index:9998;background:var(--card2);border:1px solid ${c};color:var(--text);padding:10px 14px;border-radius:var(--r);font-size:12px;max-width:300px;line-height:1.5;box-shadow:0 4px 14px rgba(0,0,0,.3)`;
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(()=>t.remove(),dur);
+}
+
+// ===== INIT =====
+updateUI();
+</script>
+</body>
+</html>
